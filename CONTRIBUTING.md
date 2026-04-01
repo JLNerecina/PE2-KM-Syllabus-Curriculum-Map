@@ -25,6 +25,6 @@ Format: `[role]/[feature-name]`
 * The **Project Manager** or **Developer** must review and approve the PR before merging to `dev` or `main`.
 
 ## 5. Code Review Expectations
-* Verify that the code is readable and documented.
+* Verify that the code is readable and documented..
 * Ensure no API keys or passwords are exposed.
 * Confirm the feature matches the **UX Wireframes** and **KM Architecture**.
