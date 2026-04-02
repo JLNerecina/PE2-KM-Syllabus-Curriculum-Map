@@ -1,4 +1,4 @@
-# Week 1 Standup – Sprint 1
+# Week 2 Standup – Sprint 1
 **Date:** 2026-04-01 <br>
 **Duration:** 15–20 minutes <br>
 **Members present:** (SM, UX/UI Designer, Full-Stack Developer, QA & Documentation Lead) <br>
