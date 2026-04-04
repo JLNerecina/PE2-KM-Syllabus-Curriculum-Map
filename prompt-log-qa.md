@@ -1,0 +1,48 @@
+# Prompt Log – QA & Documentation Lead (Bai Sakina B. Abad)
+**Project:** Syllabus & Curriculum Map (Knowledge Mapping)  
+**Branch:** feature/qa  
+**Role:** QA & Documentation Lead
+
+## Entry 1
+**Date:** 2026-03-31  
+**Task:** Create a Test Case Template designed for an Agile environment. The template must be organized by Sprints and Functionalities.
+
+**Prompt given to AI:**  
+```
+Role: You are an expert QA Engineer and Documentation Specialist. I am the QA and Documentation Lead for a group project building a [Role-based Syllabus & Curriculum Map (Knowledge Mapping)].
+Task: Create a comprehensive, professional Test Case Template designed for an Agile environment. The template must be organized by Sprints and Functionalities.
+Template Structure Requirements:
+For every test case, include columns/sections for:
+
+Test ID & Title
+Pre-conditions
+Priority testing (Low, Medium, High)
+Test Data (Clearly distinguishing between Valid and Invalid data)
+Test Steps
+Expected Result vs. Actual Result
+Status (Pass/Fail/Blocked)
+Testing Categories to Include:
+Please provide specific placeholder examples for each of the following categories within the template:
+
+Functional Testing: Focus on requirement verification.
+Performance/Stress Testing: Focus on speed, stability, and peak load reliability.
+Usability Testing: Focus on UI/UX intuitiveness.
+Security Testing: Focus on authentication, data protection, and vulnerability.
+Regression Testing: Focus on ensuring new changes haven't broken existing features.
+Formatting: Use a clean, Markdown-table-based layout that I can easily copy into Excel or Google Sheets.
+```
+
+**What the AI produced:**  
+Clean looking structure for test cases with placeholder examples. 
+
+**What I changed / improved:**  
+I removed the priority column and replaced the content with the actual test case applicaple to our project.
+
+**Why:**  
+This way I can make the table look cleaner and align the test cases with the project requirements.
+
+**What I learned / decided:**  
+There are different types of testing and it is important to have a test case for each type of testing.
+
+
+*Next entries will be added as I continue using AI for standup notes and Testing.*
