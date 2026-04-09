@@ -110,4 +110,66 @@ Raw meeting notes must be turned into formal deliverables immediately. Decided t
 
 ---
 
+## Entry 6
+**Date:** 2026-04-02  
+**Task:** Review and approve UX/UI wireframes PR, then create follow-up GitHub Issue for the 4 role-based wireframes.
+
+**Prompt given to AI:**  
+"Add a comment here that I approved the given wireframe design... Add that she can now edit and upload her 1st prompt-log.md... Add na dapat pala ay magawan niya na din ng wireframe yung 4 roles..."
+
+**What the AI produced:**  
+Professional PR review comment with approval, gentle reminder for prompt-log.md, and clear request for the 4 role wireframes.
+
+**What I changed / improved:**  
+Made the request for the 4 roles more direct and professional while keeping a positive tone.
+
+**Why:**  
+To give clear direction without sounding demanding, and to enforce the guideline requirement for prompt-log.md.
+
+**What I learned / decided:**  
+Clear, polite communication in PR reviews keeps team morale high while still driving deliverables. Decided to always create a linked GitHub Issue when requesting additional work.
+
+---
+
+## Entry 7
+**Date:** 2026-04-02  
+**Task:** Update CHANGELOG.md after merging wireframes and fixing accidental prompt-log.md on main branch.
+
+**Prompt given to AI:**  
+"Add the change that I committed today on changelog.md about the 4 wireframes... and I deleted the prompt-log.md that should be on the branch of sm only but I accidentally push it to the main."
+
+**What the AI produced:**  
+Updated CHANGELOG.md with v0.2 entry and proper note about the accidental commit.
+
+**What I changed / improved:**  
+Added a clear "Fixed" section explaining the prompt-log.md mistake.
+
+**Why:**  
+To maintain transparency and show that we are following the guideline strictly.
+
+**What I learned / decided:**  
+Even small mistakes should be documented in the changelog. This teaches the team the importance of branch discipline.
+
+---
+
+## Entry 8
+**Date:** 2026-04-09  
+**Task:** Create full sprint execution plan for Sprint 1 and Sprint 2, including assignments, timeline, and short descriptions for all user stories.
+
+**Prompt given to AI:**  
+"Also we are done with these issues what issues should I open next... Also from this sprints that you created... create me a plan for every sprints and user stories including who should I assign..."
+
+**What the AI produced:**  
+Complete sprint plan with tables, assignments to specific roles, due dates, and parallel tasks for non-developer members.
+
+**What I changed / improved:**  
+Adjusted due dates to match our current week (Week 3 start) and made the language more precise for our GitHub Projects board.
+
+**Why:**  
+To make the plan immediately actionable and ready to turn into GitHub Issues today.
+
+**What I learned / decided:**  
+Having a detailed sprint plan with clear ownership and deadlines makes coordination much easier as PM. Decided to turn every story into a GitHub Issue this week and link them to the Projects board.
+---
+
 **Next entries will be added as I continue using AI for standup notes, presentation slides, or other SM tasks.**
