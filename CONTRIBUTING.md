@@ -1,30 +1,52 @@
-# Contributing to Syllabus Curriculum Map
+# Contributing Guidelines
 
-Thank you for contributing to our Knowledge Management project!
-To maintain a clean and professional codebase, please follow these guidelines.
+Thank you for contributing to the **Syllabus & Curriculum Map** (Knowledge Mapping) project!
 
-## 1. Getting Started (Clone & Run)
-*this will be updated once the actual functionalities are implemented.*
+This document describes how our team works together. Please follow these rules so we can maintain a clean and organized repository.
 
-## 2. Branch Naming Conventions
-Every member must work on their own feature branch. **Never commit directly to `main`**. 
-Format: `[role]/[feature-name]`
-* Example: `dev/authentication-fix`
-* Example: `ux/dashboard-wireframes`
-* Example: `km/taxonomy-schema`
+## How to Contribute
 
-## 3. Commit Message Standards
-* Messages must describe **what** changed and **why**, linking it to KM principles where possible.
-* **Format:** `[Type]: [Description] — [Rationale]`
-* **Example:** `feat: add search filter — improves knowledge retrieval per SECI externalization phase`.
+### 1. Branching Strategy
+- Never commit directly to `main`.
+- Create a feature branch for your work: `feature/your-role-task`  
+  Examples: `feature/km-analyst-framework`, `feature/ux-wireframes`, `feature/dev-auth`
+- Work only on your own branch.
 
+### 2. Commit Messages
+Write clear commit messages that explain **what** you changed and **why**.
 
-## 4. Pull Request (PR) Process
-* Each member must open at least one PR per sprint.
-* PRs must include a description of the changes and a link to any related GitHub Issues.
-* The **Project Manager** or **Developer** must review and approve the PR before merging to `dev` or `main`.
+Good example:
+Add initial wireframes for 4 roles — supports role-based knowledge visualization
 
-## 5. Code Review Expectations
-* Verify that the code is readable and documented..
-* Ensure no API keys or passwords are exposed.
-* Confirm the feature matches the **UX Wireframes** and **KM Architecture**.
+Bad example:
+update stuff
+
+### 3. Pull Requests (PRs)
+- Every member must open at least **1 PR per sprint**.
+- Write a clear PR description (what you did + related Decision Log or Issue).
+- Request review from at least **one other teammate** (PM will do final review).
+- Wait for approval before merging.
+
+### 4. Documentation & Prompt Log
+- All members must maintain `prompt-log.md` on their own branch.
+- Put all project documents inside the `/docs/` folder (e.g., `km-framework-memo.md`, wireframes in `/docs/wireframes/`).
+- Update `CHANGELOG.md` when making significant changes (PM coordinates this).
+
+### 5. Issues & Projects Board
+- File bugs or feature requests as GitHub Issues.
+- All tasks are tracked on the GitHub Projects board: “Syllabus & Curriculum Map”.
+- Move your cards from To Do → In Progress → Review → Done.
+
+### 6. Code & Design Standards
+- Follow the wireframes approved by the team.
+- Keep the app clean and minimal to support knowledge mapping visualization.
+- Use Supabase for the database and Vercel for hosting (as decided).
+
+### Questions or Help?
+- Ask in the group chat.
+- Create an Issue if it's a blocker.
+- Attend weekly standups (PM will schedule).
+
+We appreciate every contribution — let's build a great Knowledge Management project together!
+
+Last updated: 2026-03-31 by Scrum Master
