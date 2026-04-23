@@ -36,6 +36,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setIsLoading(false);
+      
+      // If this page was opened as a popup and we are now logged in, close the popup.
+      if (session && window.opener) {
+        window.close();
+      }
     });
 
     return () => subscription.unsubscribe();
