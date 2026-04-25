@@ -22,11 +22,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const syncProfile = async (user: User) => {
+      const { error } = await supabase.from('profiles').upsert({
+        id: user.id,
+        name: user.user_metadata.full_name || user.email?.split('@')[0] || 'User',
+        email: user.email!,
+      }, { onConflict: 'id' });
+      
+      if (error) {
+        console.error('Error syncing profile:', error);
+      }
+    };
+
     // Fetch initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setIsLoading(false);
+      if (session?.user) syncProfile(session.user);
     });
 
     // Listen for auth changes (login, logout, token refresh)
@@ -36,6 +49,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setIsLoading(false);
+      
+      if (session?.user) {
+        syncProfile(session.user);
+      }
       
       // If this page was opened as a popup and we are now logged in, close the popup.
       if (session && window.opener) {

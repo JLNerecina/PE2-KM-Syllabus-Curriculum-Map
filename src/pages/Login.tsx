@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
@@ -47,6 +47,16 @@ export default function Login() {
     }
   };
 
+  // Auto-clear error message after 5 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   return (
     <div className="bg-background text-on-background min-h-screen flex items-center justify-center relative overflow-hidden">
       {/* Cosmic Background Decoration */}
@@ -63,12 +73,20 @@ export default function Login() {
 
       {/* Login Container */}
       <main className="relative z-10 w-full max-w-md px-margin-mobile">
-        {/* Error Toast */}
+        {/* Error Toast (Fixed Floating) */}
         {error && (
-          <div className="absolute -top-24 left-0 right-0 animate-bounce">
-            <div className="bg-error-container border border-error/30 text-on-error-container px-6 py-4 rounded-xl flex items-center gap-3 shadow-2xl backdrop-blur-md">
-              <span className="material-symbols-outlined text-error">error</span>
-              <p className="font-label-md text-label-md">{error}</p>
+          <div className="fixed top-8 right-8 z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="bg-red-500 text-white px-6 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center gap-4 border border-red-400/20 backdrop-blur-md">
+               <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-white">error</span>
+                </div>
+                <div className="flex-1 min-w-[200px]">
+                    <h4 className="font-bold text-sm">Authentication Error</h4>
+                    <p className="text-xs text-white/90 leading-tight">{error}</p>
+                </div>
+                <button onClick={() => setError(null)} className="p-2 hover:bg-white/20 rounded-full transition-colors">
+                    <span className="material-symbols-outlined text-sm">close</span>
+                </button>
             </div>
           </div>
         )}
