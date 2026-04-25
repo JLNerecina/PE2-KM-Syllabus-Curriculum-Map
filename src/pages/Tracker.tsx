@@ -736,14 +736,28 @@ export default function Tracker() {
                 <div className="mt-6 pt-6 border-t border-slate-800">
                     <h4 className="text-sm font-bold text-slate-500 mb-3 uppercase tracking-wider">Required For</h4>
                     {prerequisites.filter(p => p.prerequisite_id === selectedCourseDetails.id).length > 0 ? (
-                        <ul className="list-disc list-inside text-sm text-slate-300 space-y-1">
+                        <ul className="space-y-2">
                             {prerequisites
                                 .filter(p => p.prerequisite_id === selectedCourseDetails.id)
                                 .map(p => {
                                     const requiredByCourse = allCourses.find(c => c.id === p.course_id);
-                                    return requiredByCourse ? (
-                                        <li key={p.course_id}>{requiredByCourse.code} - {requiredByCourse.title}</li>
-                                    ) : null;
+                                    if (!requiredByCourse) return null;
+                                    const { isPassed, isTaking } = getPrereqStatus(requiredByCourse.id);
+
+                                    return (
+                                        <li key={p.course_id} className="flex items-center justify-between bg-slate-900/50 p-2 rounded-lg border border-slate-800">
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-bold text-slate-200">{requiredByCourse.code}</span>
+                                                <span className="text-[10px] text-slate-500 line-clamp-1">{requiredByCourse.title}</span>
+                                            </div>
+                                            {(isPassed || isTaking) && (
+                                                <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20">
+                                                    <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                                                    {isPassed ? 'Passed' : 'Taking'}
+                                                </div>
+                                            )}
+                                        </li>
+                                    );
                                 })
                             }
                         </ul>
