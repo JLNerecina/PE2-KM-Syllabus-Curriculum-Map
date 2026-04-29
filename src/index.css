@@ -123,3 +123,23 @@
     border-radius: 10px;
   }
 }
+
+@layer utilities {
+  .glass-card {
+    background: rgba(23, 31, 51, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(192, 193, 255, 0.15);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+  .inner-glow {
+    box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  .spectral-gradient {
+    background: linear-gradient(135deg, #6366f1 0%, #22d3ee 100%);
+  }
+  .curriculum-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+}

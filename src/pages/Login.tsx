@@ -8,16 +8,6 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Auto-clear error message after 5 seconds
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError(null);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
-
   // If user is already logged in, redirect to home
   if (user) {
     return <Navigate to="/" replace />;
@@ -56,6 +46,16 @@ export default function Login() {
       setIsLoading(false);
     }
   };
+
+  // Auto-clear error message after 5 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   return (
     <div className="bg-background text-on-background min-h-screen flex items-center justify-center relative overflow-hidden">
