@@ -62,7 +62,7 @@ export default function ManageUsers() {
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'user-list' && <UserListTab programs={programs} />}
+        {activeTab === 'user-list' && <UserListTab programs={programs} departments={departments} />}
         {activeTab === 'bulk-enrollment' && <BulkEnrollmentTab programs={programs} departments={departments} />}
         {activeTab === 'pre-authorize' && <PreAuthorizeTab programs={programs} departments={departments} />}
       </div>

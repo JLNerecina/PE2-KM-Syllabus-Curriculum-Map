@@ -48,7 +48,7 @@ export default function Tracker() {
   }, [isViewingOther, profile, navigate]);
 
   const targetUserId = isViewingOther ? studentId : session?.user?.id;
-  const canEdit = !isViewingOther || (profile?.role === 'admin' || profile?.role === 'superadmin');
+  const canEdit = !isViewingOther || (profile?.role === 'admin' || profile?.role === 'superadmin' || (profile?.role === 'faculty' && profile?.can_edit_curriculum));
 
   const [studentName, setStudentName] = useState<string | null>(null);
 

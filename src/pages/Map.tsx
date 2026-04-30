@@ -120,7 +120,7 @@ export default function Map() {
             Curriculum Map{(isViewingOther ? studentName : profile?.name) ? <span className="text-indigo-400"> — {isViewingOther ? studentName : profile?.name}</span> : ''}
           </h1>
           <div className="flex gap-4">
-            {isViewingOther && (profile?.role === 'admin' || profile?.role === 'superadmin') && (
+            {isViewingOther && (profile?.role === 'admin' || profile?.role === 'superadmin' || (profile?.role === 'faculty' && profile?.can_edit_curriculum)) && (
               <button 
                 onClick={() => navigate(`/tracker/${studentId}`)}
                 className="flex items-center gap-2 border border-indigo-500 text-indigo-400 hover:bg-indigo-500/10 px-4 py-2 rounded-lg font-bold transition-colors"
