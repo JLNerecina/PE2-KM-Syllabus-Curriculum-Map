@@ -51,6 +51,23 @@ export default function PreAuthorizeTab({ programs, departments }: Props) {
         setFeedback({ type: 'error', message: `Failed: ${error.message}` });
       }
     } else {
+      // Log single pre-authorization manually (replaces DB trigger)
+      await supabase.from('audit_logs').insert({
+        actor_id: profile?.id,
+        action: 'preauthorize.create',
+        target_table: 'preauthorized_users',
+        target_id: email.trim(),
+        target_label: name.trim() || email.trim(),
+        changes: {
+          email: { old: null, new: email.trim() },
+          role: { old: null, new: role }
+        },
+        metadata: {
+          id_number: idNumber.trim() || null,
+          program_id: programId || null,
+          department_id: departmentId || null
+        }
+      });
       setFeedback({ type: 'success', message: `Successfully pre-authorized ${email.trim()} as ${role}.` });
       setEmail(''); setName(''); setIdNumber(''); setRole('faculty'); setDepartmentId(''); setProgramId('');
     }

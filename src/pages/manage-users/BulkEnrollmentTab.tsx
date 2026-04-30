@@ -56,6 +56,14 @@ export default function BulkEnrollmentTab({ programs, departments }: Props) {
       return;
     }
 
+    // Check for duplicate emails within the batch
+    const emails = validRows.map(r => r.email.trim());
+    const uniqueEmails = new Set(emails);
+    if (uniqueEmails.size !== emails.length) {
+      setFeedback({ type: 'error', message: 'Duplicate email addresses found in your rows. Each email must be unique.' });
+      return;
+    }
+
     setIsSubmitting(true);
     const insertData = validRows.map(r => ({
       email: r.email.trim(),
@@ -83,7 +91,11 @@ export default function BulkEnrollmentTab({ programs, departments }: Props) {
           count: validRows.length,
           program: selectedProgram?.name,
           program_code: selectedProgram?.code,
-          emails: validRows.map(r => r.email.trim()),
+          students: validRows.map(r => ({
+            id_number: r.studentNumber.trim() || null,
+            name: r.fullName.trim() || null,
+            email: r.email.trim()
+          }))
         },
       });
       setFeedback({ type: 'success', message: `Successfully pre-authorized ${validRows.length} student${validRows.length > 1 ? 's' : ''}.` });

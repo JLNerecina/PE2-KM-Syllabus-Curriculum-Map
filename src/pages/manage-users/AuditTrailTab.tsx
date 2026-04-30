@@ -11,10 +11,8 @@ const ACTION_META: Record<string, { label: string; color: string; icon: string }
   'user.toggle_edit_curriculum':{ label: 'Edit Curriculum',    color: 'bg-amber-500/20 text-amber-300',    icon: 'toggle_on' },
   'bulk_enrollment.create':     { label: 'Bulk Enrollment',    color: 'bg-cyan-500/20 text-cyan-300',      icon: 'group_add' },
   'preauthorize.create':        { label: 'Pre-Authorized',     color: 'bg-purple-500/20 text-purple-300',  icon: 'person_add' },
-  'curriculum.course_add':      { label: 'Course Added',       color: 'bg-teal-500/20 text-teal-300',      icon: 'add_circle' },
-  'curriculum.course_update':   { label: 'Course Updated',     color: 'bg-sky-500/20 text-sky-300',        icon: 'sync' },
-  'curriculum.course_remove':   { label: 'Course Removed',     color: 'bg-rose-500/20 text-rose-300',      icon: 'remove_circle' },
-  'curriculum.term_update':     { label: 'Term Updated',       color: 'bg-violet-500/20 text-violet-300',  icon: 'event' },
+  'curriculum.update':          { label: 'Curriculum Updated', color: 'bg-teal-500/20 text-teal-300',      icon: 'school' },
+  'curriculum.finalize':        { label: 'Curriculum Finalized', color: 'bg-green-500/20 text-green-400',  icon: 'workspace_premium' },
 };
 
 const ROLE_COLORS: Record<UserRole, string> = {
@@ -106,6 +104,7 @@ export default function AuditTrailTab() {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedMetaId, setExpandedMetaId] = useState<string | null>(null);
   const [showFilterPanel, setShowFilterPanel] = useState(false);
 
   useEffect(() => {
@@ -369,8 +368,9 @@ export default function AuditTrailTab() {
               {pageLogs.map((entry, i) => {
                 const meta = getActionMeta(entry.action);
                 const isExpanded = expandedId === entry.id;
+                const isMetaExpanded = expandedMetaId === entry.id;
                 const colorClass = initialsColors[i % initialsColors.length];
-                const hasDetails = entry.changes && Object.keys(entry.changes).length > 0;
+                const hasDetails = (entry.changes && Object.keys(entry.changes).length > 0) || (entry.metadata && Object.keys(entry.metadata).length > 0);
 
                 return (
                   <>
@@ -437,44 +437,132 @@ export default function AuditTrailTab() {
                     </tr>
 
                     {/* Expanded Detail Row */}
-                    {isExpanded && entry.changes && (
+                    {isExpanded && hasDetails && (
                       <tr key={`${entry.id}-detail`} className="bg-indigo-500/5">
                         <td colSpan={6} className="px-10 py-5">
-                          <div className="space-y-3">
-                            <p className="text-xs font-bold text-indigo-300 uppercase tracking-widest">Change Details</p>
-                            <div className="grid gap-2">
-                              {Object.entries(entry.changes).map(([field, diff]) => (
-                                <div key={field} className="flex items-center gap-4 bg-surface-container-low/50 rounded-lg px-4 py-3 border border-indigo-500/10">
-                                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider w-36 shrink-0">
-                                    {formatFieldName(field)}
-                                  </span>
-                                  <div className="flex items-center gap-3 min-w-0">
-                                    <span className="text-sm text-red-400/80 bg-red-500/10 px-2 py-0.5 rounded font-mono truncate max-w-[200px]">
-                                      {formatValue(diff.old)}
-                                    </span>
-                                    <span className="material-symbols-outlined text-[16px] text-slate-500 shrink-0">arrow_forward</span>
-                                    <span className="text-sm text-emerald-400/80 bg-emerald-500/10 px-2 py-0.5 rounded font-mono truncate max-w-[200px]">
-                                      {formatValue(diff.new)}
-                                    </span>
+                          <div className="space-y-4">
+                            
+                            {/* Action-Specific Content */}
+                            {entry.action === 'bulk_enrollment.create' ? (
+                              <div className="space-y-3">
+                                  <p className="text-xs font-bold text-indigo-300 uppercase tracking-widest">
+                                      Enrolled into {entry.metadata?.program_code || entry.target_label} — {entry.metadata?.program}
+                                  </p>
+                                  <div className="bg-surface-container-low/50 rounded-lg border border-indigo-500/10 overflow-hidden">
+                                      <table className="w-full text-left text-sm">
+                                          <thead className="bg-surface-container-high/50 text-indigo-300 text-[10px] uppercase tracking-widest">
+                                              <tr>
+                                                  <th className="px-4 py-2 border-b border-indigo-500/10 w-12">#</th>
+                                                  <th className="px-4 py-2 border-b border-indigo-500/10">ID Number</th>
+                                                  <th className="px-4 py-2 border-b border-indigo-500/10">Full Name</th>
+                                                  <th className="px-4 py-2 border-b border-indigo-500/10">Email</th>
+                                              </tr>
+                                          </thead>
+                                          <tbody className="divide-y divide-indigo-500/10">
+                                              {(entry.metadata?.students || []).map((s: any, idx: number) => (
+                                                  <tr key={idx} className="hover:bg-indigo-500/5">
+                                                      <td className="px-4 py-2 text-slate-500">{idx + 1}</td>
+                                                      <td className="px-4 py-2 text-slate-300">{s.id_number || '—'}</td>
+                                                      <td className="px-4 py-2 text-slate-300">{s.name || '—'}</td>
+                                                      <td className="px-4 py-2 text-slate-300">{s.email}</td>
+                                                  </tr>
+                                              ))}
+                                              {(!entry.metadata?.students || entry.metadata.students.length === 0) && (
+                                                  <tr>
+                                                      <td colSpan={4} className="px-4 py-4 text-center text-slate-500 text-xs">No student details available</td>
+                                                  </tr>
+                                              )}
+                                          </tbody>
+                                      </table>
                                   </div>
+                              </div>
+                            ) : entry.action === 'curriculum.update' ? (
+                              <div className="space-y-3">
+                                  <p className="text-xs font-bold text-indigo-300 uppercase tracking-widest">
+                                      Year {entry.metadata?.year_level}, Semester {entry.metadata?.semester} — {entry.metadata?.total_units} units
+                                  </p>
+                                  <div className="bg-surface-container-low/50 rounded-lg border border-indigo-500/10 overflow-hidden">
+                                      <table className="w-full text-left text-sm">
+                                          <thead className="bg-surface-container-high/50 text-indigo-300 text-[10px] uppercase tracking-widest">
+                                              <tr>
+                                                  <th className="px-4 py-2 border-b border-indigo-500/10">Course Code</th>
+                                                  <th className="px-4 py-2 border-b border-indigo-500/10">Course Title</th>
+                                                  <th className="px-4 py-2 border-b border-indigo-500/10">Action</th>
+                                              </tr>
+                                          </thead>
+                                          <tbody className="divide-y divide-indigo-500/10">
+                                              {[
+                                                  ...(entry.metadata?.courses_added || []).map((c: any) => ({ ...c, type: 'added' })),
+                                                  ...(entry.metadata?.courses_removed || []).map((c: any) => ({ ...c, type: 'removed' })),
+                                                  ...(entry.metadata?.courses_status_changed || []).map((c: any) => ({ ...c, type: 'changed' }))
+                                              ].map((c: any, idx: number) => (
+                                                  <tr key={idx} className="hover:bg-indigo-500/5">
+                                                      <td className="px-4 py-2 text-indigo-400 font-bold text-xs">{c.code}</td>
+                                                      <td className="px-4 py-2 text-slate-300">{c.title}</td>
+                                                      <td className="px-4 py-2">
+                                                          {c.type === 'added' && <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded uppercase tracking-wider font-bold">Added</span>}
+                                                          {c.type === 'removed' && <span className="text-[10px] bg-red-500/20 text-red-300 px-2 py-0.5 rounded uppercase tracking-wider font-bold">Removed</span>}
+                                                          {c.type === 'changed' && <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded uppercase tracking-wider font-bold">{c.old_status} → {c.new_status}</span>}
+                                                      </td>
+                                                  </tr>
+                                              ))}
+                                              {(!entry.metadata?.courses_added && !entry.metadata?.courses_removed && !entry.metadata?.courses_status_changed) && (
+                                                  <tr>
+                                                      <td colSpan={3} className="px-4 py-4 text-center text-slate-500 text-xs">No specific course modifications logged</td>
+                                                  </tr>
+                                              )}
+                                          </tbody>
+                                      </table>
+                                  </div>
+                              </div>
+                            ) : entry.changes && Object.keys(entry.changes).length > 0 ? (
+                              <div className="space-y-3">
+                                <p className="text-xs font-bold text-indigo-300 uppercase tracking-widest">Change Details</p>
+                                <div className="grid gap-2">
+                                  {Object.entries(entry.changes).map(([field, diff]) => (
+                                    <div key={field} className="flex items-center gap-4 bg-surface-container-low/50 rounded-lg px-4 py-3 border border-indigo-500/10">
+                                      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider w-36 shrink-0">
+                                        {formatFieldName(field)}
+                                      </span>
+                                      <div className="flex items-center gap-3 min-w-0">
+                                        <span className="text-sm text-red-400/80 bg-red-500/10 px-2 py-0.5 rounded font-mono truncate max-w-[200px]">
+                                          {formatValue(diff.old)}
+                                        </span>
+                                        <span className="material-symbols-outlined text-[16px] text-slate-500 shrink-0">arrow_forward</span>
+                                        <span className="text-sm text-emerald-400/80 bg-emerald-500/10 px-2 py-0.5 rounded font-mono truncate max-w-[200px]">
+                                          {formatValue(diff.new)}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  ))}
                                 </div>
-                              ))}
-                            </div>
+                              </div>
+                            ) : null}
 
-                            {/* Metadata (if present) */}
+                            {/* Metadata Toggle */}
                             {entry.metadata && Object.keys(entry.metadata).length > 0 && (
-                              <div className="mt-3">
-                                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Metadata</p>
-                                <div className="bg-surface-container-lowest/50 rounded-lg px-4 py-3 border border-indigo-500/10">
-                                  <pre className="text-xs text-slate-400 font-mono whitespace-pre-wrap break-all">
-                                    {JSON.stringify(entry.metadata, null, 2)}
-                                  </pre>
-                                </div>
+                              <div className="border border-indigo-500/10 rounded-lg overflow-hidden mt-4">
+                                <button
+                                  onClick={() => setExpandedMetaId(isMetaExpanded ? null : entry.id)}
+                                  className="w-full px-4 py-2.5 bg-surface-container-lowest/50 hover:bg-surface-container-lowest flex items-center justify-between text-xs font-bold text-slate-400 uppercase tracking-widest transition-colors"
+                                >
+                                  <span className="flex items-center gap-2">
+                                    <span className={`material-symbols-outlined text-[16px] transition-transform ${isMetaExpanded ? 'rotate-90' : ''}`}>chevron_right</span>
+                                    Raw Metadata
+                                  </span>
+                                </button>
+                                {isMetaExpanded && (
+                                  <div className="bg-surface-container-lowest p-4 border-t border-indigo-500/10">
+                                    <pre className="text-xs text-slate-400 font-mono whitespace-pre-wrap break-all">
+                                      {JSON.stringify(entry.metadata, null, 2)}
+                                    </pre>
+                                  </div>
+                                )}
                               </div>
                             )}
 
                             {/* Footer info */}
-                            <div className="flex items-center gap-4 text-[11px] text-slate-500 pt-1">
+                            <div className="flex items-center gap-4 text-[11px] text-slate-500 pt-2 border-t border-indigo-500/10">
                               <span>ID: {entry.id.slice(0, 8)}…</span>
                               <span>Table: {entry.target_table}</span>
                               <span>Target ID: {entry.target_id?.slice(0, 8)}…</span>

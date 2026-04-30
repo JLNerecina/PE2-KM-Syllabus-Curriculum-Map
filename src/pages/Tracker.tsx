@@ -444,6 +444,49 @@ export default function Tracker() {
         await supabase.from('student_courses').insert(coursesToInsert);
     }
 
+    // Consolidated Audit Logging
+    if (isViewingOther) {
+        const oldEnrolledIds = studentCourses.filter(sc => sc.student_term_id === activeTerm?.id).map(sc => sc.course_id);
+        
+        const coursesAdded = Array.from(selectedCourseIds)
+            .filter(id => !oldEnrolledIds.includes(id))
+            .map(id => {
+                const c = allCourses.find(course => course.id === id);
+                return { code: c?.code, title: c?.title, status: 'enrolled' };
+            });
+            
+        const coursesRemoved = oldEnrolledIds
+            .filter(id => !selectedCourseIds.has(id))
+            .map(id => {
+                const c = allCourses.find(course => course.id === id);
+                return { code: c?.code, title: c?.title };
+            });
+            
+        const coursesStatusChanged = retakingIds.map(id => {
+            const c = allCourses.find(course => course.id === id);
+            return { code: c?.code, title: c?.title, old_status: 'enrolled', new_status: 'failed' };
+        });
+        
+        if (coursesAdded.length > 0 || coursesRemoved.length > 0 || coursesStatusChanged.length > 0) {
+            await supabase.from('audit_logs').insert({
+                actor_id: profile?.id,
+                action: 'curriculum.update',
+                target_table: 'student_terms',
+                target_id: targetUserId,
+                target_label: studentName || targetUserId,
+                metadata: {
+                    student_id: targetUserId,
+                    year_level: activeYear,
+                    semester: activeSem,
+                    courses_added: coursesAdded,
+                    courses_removed: coursesRemoved,
+                    courses_status_changed: coursesStatusChanged,
+                    total_units: totalUnits
+                }
+            });
+        }
+    }
+
     await fetchData(); // Re-fetch to update UI state
     setInfoMessage(`Your academic journey for Year ${activeYear} ${activeSem === 1 ? '1st Semester' : activeSem === 2 ? '2nd Semester' : 'Summer'} has been successfully recorded.`);
     
@@ -471,6 +514,21 @@ export default function Tracker() {
            .in('student_term_id', termIds)
            .eq('status', 'enrolled');
     }
+
+    if (isViewingOther) {
+        await supabase.from('audit_logs').insert({
+            actor_id: profile?.id,
+            action: 'curriculum.finalize',
+            target_table: 'student_terms',
+            target_id: targetUserId,
+            target_label: studentName || targetUserId,
+            metadata: {
+                student_id: targetUserId,
+                action: 'Finalized Curriculum (Marked all active courses as passed)'
+            }
+        });
+    }
+
     await fetchData();
     setIsFinalizeModalOpen(true);
   };
