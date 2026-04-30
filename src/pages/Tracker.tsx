@@ -48,6 +48,7 @@ export default function Tracker() {
   }, [isViewingOther, profile, navigate]);
 
   const targetUserId = isViewingOther ? studentId : session?.user?.id;
+  const canEdit = !isViewingOther || (profile?.role === 'admin' || profile?.role === 'superadmin');
 
   const [studentName, setStudentName] = useState<string | null>(null);
 
@@ -605,7 +606,7 @@ export default function Tracker() {
 
                <div className="mt-auto flex flex-col gap-4 pt-6">
                  <div className="flex gap-4">
-                     {activeTerm?.status === 'completed' && (
+                     {canEdit && activeTerm?.status === 'completed' && (
                          <button 
                              onClick={() => setIsEditModalOpen(true)}
                              className="flex-1 bg-slate-800 text-white font-bold py-3 rounded-lg shadow-lg hover:bg-slate-700 transition-all border border-slate-700"
@@ -613,13 +614,15 @@ export default function Tracker() {
                              Edit Term
                          </button>
                      )}
-                     <button 
-                        onClick={saveProgress}
-                        className="flex-1 bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-indigo-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={activeTerm?.status === 'completed'}
-                     >
-                        {activeTerm?.status === 'completed' ? 'Term Saved' : 'Save Progress'}
-                     </button>
+                     {canEdit && (
+                         <button 
+                            onClick={saveProgress}
+                            className="flex-1 bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-indigo-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={activeTerm?.status === 'completed'}
+                         >
+                            {activeTerm?.status === 'completed' ? 'Term Saved' : 'Save Progress'}
+                         </button>
+                     )}
                  </div>
                  
                  {/* Finalize Curriculum Prompt for 4th Year Summer */}
@@ -628,12 +631,14 @@ export default function Tracker() {
                          <span className="material-symbols-outlined text-green-400 text-3xl mb-2">workspace_premium</span>
                          <h4 className="text-white font-bold mb-1">Graduation Ready?</h4>
                          <p className="text-xs text-slate-400 mb-4">You have completed the final term. Finalize your curriculum to mark your final courses as passed.</p>
-                         <button 
-                             onClick={finalizeCurriculum}
-                             className="w-full bg-green-500 hover:bg-green-400 text-slate-900 font-bold py-2 rounded-lg shadow-lg transition-all"
-                         >
-                             Finalize Curriculum
-                         </button>
+                         {canEdit && (
+                             <button 
+                                 onClick={finalizeCurriculum}
+                                 className="w-full bg-gradient-to-r from-green-500 to-emerald-400 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-green-500/25 transition-all"
+                             >
+                                 Finalize Curriculum
+                             </button>
+                         )}
                      </div>
                  )}
                </div>
@@ -667,7 +672,7 @@ export default function Tracker() {
 
                         const missingPrereqs = getMissingPrereqs(course.id);
                         const isLocked = !wasTaken && missingPrereqs.length > 0;
-                        const isInteractive = (!wasTaken || canRetake || isSelected) && !isTermCompleted && !isLocked;
+                        const isInteractive = canEdit && (!wasTaken || canRetake || isSelected) && !isTermCompleted && !isLocked;
 
                         const isTakingCourse = studentCourses.some(sc => sc.course_id === course.id && sc.status === 'enrolled');
                         // For styling, if it's taking course, but not actively selected in the current editable term
@@ -730,12 +735,12 @@ export default function Tracker() {
                                 <div className="ml-2 flex items-center gap-3">
                                     {canRetake && (
                                         <button 
-                                            onClick={(e) => handleRetakeCourse(course.id, e)}
+                                            onClick={(e) => canEdit && handleRetakeCourse(course.id, e)}
                                             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
                                                 isSelected 
                                                     ? 'bg-red-500/20 text-red-400 border-red-500/30' 
                                                     : 'bg-indigo-500 text-white border-indigo-400 hover:scale-105'
-                                            }`}
+                                            } ${!canEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
                                         >
                                             {isSelected ? 'Retaking' : 'Retake'}
                                         </button>
