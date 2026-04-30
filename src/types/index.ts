@@ -9,7 +9,32 @@ export interface UserProfile {
   department_id?: string;
   can_edit_curriculum?: boolean;
   program_id?: string;
+  is_deleted?: boolean;
   created_at: string;
+}
+
+export interface PreauthorizedUser {
+  email: string;
+  role: UserRole;
+  name?: string;
+  id_number?: string;
+  program_id?: string;
+  department_id?: string;
+  created_at?: string;
+  created_by?: string;
+}
+
+export interface Department {
+  id: string;
+  name: string;
+  code: string;
+}
+
+export interface Program {
+  id: string;
+  name: string;
+  code: string;
+  department_id?: string;
 }
 
 export interface CourseNode {
