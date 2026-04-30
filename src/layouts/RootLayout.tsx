@@ -2,12 +2,21 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 export const RootLayout = () => {
-  const { signOut } = useAuth();
+  const { signOut, profile } = useAuth();
   const location = useLocation();
+  const role = profile?.role;
 
   const navItems = [
     { name: 'Tracker', path: '/tracker', icon: 'account_tree' },
     { name: 'Map', path: '/map', icon: 'dashboard' },
+    // Faculty, Admin, Superadmin only
+    ...(['faculty', 'admin', 'superadmin'].includes(role ?? '')
+      ? [{ name: 'Monitor', path: '/monitor', icon: 'monitoring' }]
+      : []),
+    // Admin, Superadmin only
+    ...(['admin', 'superadmin'].includes(role ?? '')
+      ? [{ name: 'Manage Users', path: '/manage-users', icon: 'group' }]
+      : []),
   ];
 
   return (

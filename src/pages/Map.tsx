@@ -1,8 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
-// @ts-ignore
-import html2pdf from 'html2pdf.js';
 
 type Course = {
   id: string;
@@ -20,25 +19,44 @@ type AttainedCourse = Course & {
 };
 
 export default function Map() {
-  const { session } = useAuth();
-  const userId = session?.user?.id;
+  const { session, profile } = useAuth();
+  const { studentId } = useParams<{ studentId?: string }>();
+  const navigate = useNavigate();
 
-  const [attainedCourses, setAttainedCourses] = useState<AttainedCourse[]>([]);
-  const mapRef = useRef<HTMLDivElement>(null);
+  const isViewingOther = !!studentId && studentId !== session?.user?.id;
 
   useEffect(() => {
-    if (!userId) return;
+    if (isViewingOther && profile?.role === 'student') {
+      // Students cannot view other students' maps
+      navigate('/map', { replace: true });
+    }
+  }, [isViewingOther, profile, navigate]);
+
+  const targetUserId = isViewingOther ? studentId : session?.user?.id;
+
+  const [attainedCourses, setAttainedCourses] = useState<AttainedCourse[]>([]);
+  const [studentName, setStudentName] = useState<string | null>(null);
+
+  // Fetch student name when viewing another student
+  useEffect(() => {
+    if (!isViewingOther || !studentId) return;
+    supabase.from('profiles').select('name').eq('id', studentId).single().then(({ data }) => {
+      if (data) setStudentName(data.name);
+    });
+  }, [isViewingOther, studentId]);
+
+  useEffect(() => {
+    if (!targetUserId) return;
 
     const fetchData = async () => {
-      // 1. Fetch terms
+      // 1. Fetch ALL terms (any status) so enrolled courses appear too
       const { data: termsData } = await supabase
         .from('student_terms')
         .select('*')
-        .eq('student_id', userId)
-        .eq('status', 'completed');
-        
+        .eq('student_id', targetUserId);
+
       if (!termsData || termsData.length === 0) return;
-      
+
       const termIds = termsData.map(t => t.id);
 
       // 2. Fetch student courses
@@ -58,36 +76,32 @@ export default function Map() {
 
       if (!coursesData) return;
 
-      const combined: AttainedCourse[] = stdCourses.map(sc => {
-        const course = coursesData.find(c => c.id === sc.course_id);
+      // Build combined — if a course appears multiple times, prefer passed > enrolled > failed
+      const bestStatus: Record<string, { status: string; term_year: number; term_semester: number }> = {};
+      stdCourses.forEach(sc => {
         const term = termsData.find(t => t.id === sc.student_term_id);
-        return {
-          ...course,
-          status: sc.status,
-          term_year: term.year_level,
-          term_semester: term.semester
-        } as AttainedCourse;
+        if (!term) return;
+        const existing = bestStatus[sc.course_id];
+        const priority = (s: string) => s === 'passed' ? 3 : s === 'enrolled' ? 2 : 1;
+        if (!existing || priority(sc.status) > priority(existing.status)) {
+          bestStatus[sc.course_id] = { status: sc.status, term_year: term.year_level, term_semester: term.semester };
+        }
+      });
+
+      const combined: AttainedCourse[] = Object.entries(bestStatus).map(([courseId, info]) => {
+        const course = coursesData.find(c => c.id === courseId);
+        return { ...course, ...info } as AttainedCourse;
       });
 
       setAttainedCourses(combined);
     };
 
     fetchData();
-  }, [userId]);
+  }, [targetUserId]);
 
   const handleDownloadPdf = () => {
-    const element = mapRef.current;
-    if (!element) return;
-
-    const opt = {
-      margin:       0.5,
-      filename:     'CICS_Curriculum_Map.pdf',
-      image:        { type: 'jpeg' as const, quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' as const }
-    };
-
-    html2pdf().set(opt).from(element).save();
+    const path = isViewingOther && studentId ? `/map-print/${studentId}` : '/map-print';
+    window.open(path, '_blank');
   };
 
   // Group by year and semester
@@ -100,100 +114,109 @@ export default function Map() {
 
   return (
     <div className="p-8 pb-32">
-      <div className="max-w-[1000px] mx-auto">
+      <div className="w-full">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold font-['Space_Grotesk']">Curriculum Map</h1>
-          <button 
-            onClick={handleDownloadPdf}
-            className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold transition-colors"
-          >
-            <span className="material-symbols-outlined text-sm">download</span>
-            Download PDF
-          </button>
+          <h1 className="text-3xl font-bold font-['Space_Grotesk']">
+            Curriculum Map{(isViewingOther ? studentName : profile?.name) ? <span className="text-indigo-400"> — {isViewingOther ? studentName : profile?.name}</span> : ''}
+          </h1>
+          <div className="flex gap-4">
+            {isViewingOther && (profile?.role === 'admin' || profile?.role === 'superadmin') && (
+              <button 
+                onClick={() => navigate(`/tracker/${studentId}`)}
+                className="flex items-center gap-2 border border-indigo-500 text-indigo-400 hover:bg-indigo-500/10 px-4 py-2 rounded-lg font-bold transition-colors"
+              >
+                <span className="material-symbols-outlined text-sm">edit</span>
+                Edit Tracker
+              </button>
+            )}
+            <button 
+              onClick={handleDownloadPdf}
+              className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold transition-colors"
+            >
+              <span className="material-symbols-outlined text-sm">download</span>
+              Download PDF
+            </button>
+          </div>
         </div>
 
-        {/* The PDF Container */}
-        <div 
-          ref={mapRef} 
-          className="bg-[#ffffff] text-[#0f172a] rounded-xl p-8 shadow-xl print:shadow-none"
-        >
-          <div className="text-center mb-8 border-b-2 border-[#e2e8f0] pb-6">
-            <h2 className="text-2xl font-black uppercase tracking-widest text-[#1e293b]">CICS Curriculum Progress</h2>
-            <p className="text-[#64748b] text-sm mt-1">Attained Courses Map</p>
+        {/* The Map Container — dark mode */}
+        <div className="bg-[#131b2e] text-slate-200 rounded-xl p-6 border border-slate-800 shadow-xl">
+          <div className="text-center mb-6 border-b border-slate-700 pb-5">
+            <h2 className="text-2xl font-black uppercase tracking-widest text-white">CICS Curriculum Progress</h2>
+            <p className="text-slate-400 text-sm mt-1">Attained Courses Map</p>
           </div>
 
           {Object.keys(groupedCourses).length === 0 ? (
-            <div className="text-center text-[#94a3b8] py-12">
-              No completed courses found. Go to the Tracker to record your progress.
+            <div className="text-center text-slate-500 py-12">
+              No courses recorded yet. Go to the Tracker to log your progress.
             </div>
           ) : (
             <div className="space-y-8">
-              {[1, 2, 3, 4].map(year => {
-                const s1 = groupedCourses[`Y${year}S1`];
-                const s2 = groupedCourses[`Y${year}S2`];
-                if (!s1 && !s2) return null;
-
-                return (
-                  <div key={year} className="break-inside-avoid">
-                    <h3 className="text-lg font-bold text-[#4338ca] mb-4 border-b border-[#e0e7ff] pb-1">
-                      Year {year}
-                    </h3>
-                    <div className="grid grid-cols-2 gap-6">
-                      {/* Semester 1 */}
-                      <div>
-                        <h4 className="text-sm font-bold text-[#64748b] mb-3 uppercase tracking-wider">Semester 1</h4>
-                        {s1 ? (
-                          <div className="space-y-2">
-                            {s1.map(course => (
-                              <div key={course.id} className="p-4 border border-[#e2e8f0] rounded-xl bg-[#f8fafc] mb-3 last:mb-0">
-                                <div className="flex justify-between items-center gap-2 mb-1">
-                                  <span className="font-bold text-[#1e293b] text-sm leading-tight">{course.code}</span>
-                                  <span className={`inline-block px-2 h-5 leading-5 text-[10px] text-center rounded font-bold whitespace-nowrap ${
-                                    course.status === 'passed' ? 'bg-[#dcfce7] text-[#15803d]' : 
-                                    course.status === 'failed' ? 'bg-[#fee2e2] text-[#b91c1c]' : 
-                                    'bg-[#dbeafe] text-[#1d4ed8]'
-                                  }`}>
-                                    {course.status === 'enrolled' ? 'TAKING' : course.status.toUpperCase()}
-                                  </span>
-                                </div>
-                                <p className="text-[11px] text-[#64748b] leading-normal">{course.title}</p>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-xs text-[#94a3b8] italic">No courses recorded.</div>
-                        )}
-                      </div>
-
-                      {/* Semester 2 */}
-                      <div>
-                        <h4 className="text-sm font-bold text-[#64748b] mb-3 uppercase tracking-wider">Semester 2</h4>
-                        {s2 ? (
-                          <div className="space-y-2">
-                            {s2.map(course => (
-                              <div key={course.id} className="p-4 border border-[#e2e8f0] rounded-xl bg-[#f8fafc] mb-3 last:mb-0">
-                                <div className="flex justify-between items-center gap-2 mb-1">
-                                  <span className="font-bold text-[#1e293b] text-sm leading-tight">{course.code}</span>
-                                  <span className={`inline-block px-2 h-5 leading-5 text-[10px] text-center rounded font-bold whitespace-nowrap ${
-                                    course.status === 'passed' ? 'bg-[#dcfce7] text-[#15803d]' : 
-                                    course.status === 'failed' ? 'bg-[#fee2e2] text-[#b91c1c]' : 
-                                    'bg-[#dbeafe] text-[#1d4ed8]'
-                                  }`}>
-                                    {course.status === 'enrolled' ? 'TAKING' : course.status.toUpperCase()}
-                                  </span>
-                                </div>
-                                <p className="text-[11px] text-[#64748b] leading-normal">{course.title}</p>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-xs text-[#94a3b8] italic">No courses recorded.</div>
-                        )}
-                      </div>
+              {/* Move the shared card renderer outside the year loop */}
+              {(() => {
+                const renderCourseCard = (course: AttainedCourse) => (
+                  <div key={course.id} className="p-3 border border-slate-700 rounded-xl bg-slate-900/80 mb-2 last:mb-0">
+                    <div className="flex justify-between items-center gap-2 mb-1">
+                      <span className="font-bold text-white text-sm leading-tight">{course.code}</span>
+                      <span className={`inline-block px-2 py-0.5 text-[10px] text-center rounded font-bold whitespace-nowrap ${
+                        course.status === 'passed' ? 'bg-green-500/20 text-green-400' :
+                        course.status === 'failed' ? 'bg-red-500/20 text-red-400' :
+                        'bg-blue-500/20 text-blue-400'
+                      }`}>
+                        {course.status === 'enrolled' ? 'TAKING' : course.status.toUpperCase()}
+                      </span>
                     </div>
+                    <p className="text-[11px] text-slate-400 leading-normal">{course.title}</p>
                   </div>
                 );
-              })}
+
+                const renderYearBlock = (year: number) => {
+                  const s1 = groupedCourses[`Y${year}S1`];
+                  const s2 = groupedCourses[`Y${year}S2`];
+                  const s3 = groupedCourses[`Y${year}S3`];
+                  if (!s1 && !s2 && !s3) return <div key={year} />;
+                  return (
+                    <div key={year} className="min-w-0">
+                      <h3 className="text-sm font-bold text-indigo-400 mb-3 border-b border-indigo-500/20 pb-1">
+                        Year {year}
+                      </h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <h4 className="text-[10px] font-bold text-slate-500 mb-2 uppercase tracking-wider">Sem 1</h4>
+                          {s1 ? <div>{s1.map(renderCourseCard)}</div> : <div className="text-xs text-slate-600 italic">—</div>}
+                        </div>
+                        <div>
+                          <h4 className="text-[10px] font-bold text-slate-500 mb-2 uppercase tracking-wider">Sem 2</h4>
+                          {s2 ? <div>{s2.map(renderCourseCard)}</div> : <div className="text-xs text-slate-600 italic">—</div>}
+                        </div>
+                      </div>
+                      {s3 && s3.length > 0 && (
+                        <div className="mt-4 border-t border-dashed border-slate-700 pt-4">
+                          <h4 className="text-[10px] font-bold text-slate-500 mb-2 uppercase tracking-wider">Summer</h4>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>{s3.map(renderCourseCard)}</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                };
+
+                return (
+                  <>
+                    {/* Year 1 & 2 side by side */}
+                    <div className="grid grid-cols-2 gap-8 mb-8">
+                      {renderYearBlock(1)}
+                      {renderYearBlock(2)}
+                    </div>
+                    {/* Year 3 & 4 side by side */}
+                    <div className="grid grid-cols-2 gap-8">
+                      {renderYearBlock(3)}
+                      {renderYearBlock(4)}
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           )}
         </div>

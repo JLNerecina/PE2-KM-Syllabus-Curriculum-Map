@@ -1,3 +1,4 @@
+import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
@@ -31,8 +32,33 @@ type CoursePrerequisite = {
 };
 
 export default function Tracker() {
-  const { session } = useAuth();
-  const userId = session?.user?.id;
+  const { session, profile } = useAuth();
+  const { studentId } = useParams<{ studentId?: string }>();
+  const navigate = useNavigate();
+  
+  // Determine target user. If studentId is present, we view that student's tracker.
+  // But only if the current user is faculty, admin, or superadmin.
+  const isViewingOther = !!studentId && studentId !== session?.user?.id;
+  
+  useEffect(() => {
+    if (isViewingOther && profile?.role === 'student') {
+      // Students cannot view other students' trackers
+      navigate('/tracker', { replace: true });
+    }
+  }, [isViewingOther, profile, navigate]);
+
+  const targetUserId = isViewingOther ? studentId : session?.user?.id;
+  const canEdit = !isViewingOther || (profile?.role === 'admin' || profile?.role === 'superadmin');
+
+  const [studentName, setStudentName] = useState<string | null>(null);
+
+  // Fetch student name when viewing another student
+  useEffect(() => {
+    if (!isViewingOther || !studentId) return;
+    supabase.from('profiles').select('name').eq('id', studentId).single().then(({ data }) => {
+      if (data) setStudentName(data.name);
+    });
+  }, [isViewingOther, studentId]);
 
   const [activeYear, setActiveYear] = useState<number>(1);
   const [activeSem, setActiveSem] = useState<number>(1);
@@ -50,7 +76,7 @@ export default function Tracker() {
   const [selectedCourseDetails, setSelectedCourseDetails] = useState<Course | null>(null);
 
   const [warningMessage, setWarningMessage] = useState<string | null>(null);
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isFinalizeModalOpen, setIsFinalizeModalOpen] = useState(false);
@@ -65,8 +91,17 @@ export default function Tracker() {
     }
   }, [warningMessage]);
 
+  useEffect(() => {
+    if (infoMessage) {
+      const timer = setTimeout(() => {
+        setInfoMessage(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [infoMessage]);
+
   const fetchData = useCallback(async () => {
-    if (!userId) return;
+    if (!targetUserId) return;
     
     // Fetch Courses
     const { data: coursesData } = await supabase.from('courses').select('*').order('year_level').order('semester');
@@ -80,7 +115,7 @@ export default function Tracker() {
     const { data: termsData } = await supabase
       .from('student_terms')
       .select('*')
-      .eq('student_id', userId)
+      .eq('student_id', targetUserId)
       .order('year_level')
       .order('semester');
     
@@ -98,7 +133,7 @@ export default function Tracker() {
     } else {
         setStudentCourses([]);
     }
-  }, [userId]);
+  }, [targetUserId]);
 
   useEffect(() => {
     fetchData();
@@ -133,10 +168,10 @@ export default function Tracker() {
   // Group all courses vertically
   const groupedCourses = useMemo(() => {
     const groups: Record<number, Record<number, Course[]>> = {
-      1: { 1: [], 2: [] },
-      2: { 1: [], 2: [] },
-      3: { 1: [], 2: [] },
-      4: { 1: [], 2: [] },
+      1: { 1: [], 2: [], 3: [] },
+      2: { 1: [], 2: [], 3: [] },
+      3: { 1: [], 2: [], 3: [] },
+      4: { 1: [], 2: [], 3: [] },
     };
     allCourses.forEach(c => {
       if (groups[c.year_level] && groups[c.year_level][c.semester]) {
@@ -173,7 +208,7 @@ export default function Tracker() {
 
   // Effects
   useEffect(() => {
-    if (totalUnits > 24 && !isOverloading) {
+    if (totalUnits > 26 && !isOverloading) {
       setShowOverloadWarning(true);
     } else {
       setShowOverloadWarning(false);
@@ -188,7 +223,7 @@ export default function Tracker() {
     // Check if all prior terms are completed.
     const priorTerms = [];
     for(let y=1; y<=4; y++) {
-      for(let s=1; s<=2; s++) {
+      for(let s=1; s<=3; s++) {
         if (y < targetYear || (y === targetYear && s < targetSem)) {
           priorTerms.push({y, s});
         }
@@ -201,7 +236,7 @@ export default function Tracker() {
     });
 
     if (missing) {
-      setWarningMessage(`Sequential rule: You must save and complete Year ${missing.y} Semester ${missing.s} before accessing Year ${targetYear} Semester ${targetSem}.`);
+      setWarningMessage(`Sequential rule: You must save and complete Year ${missing.y} ${missing.s === 1 ? '1st Semester' : missing.s === 2 ? '2nd Semester' : 'Summer'} before accessing Year ${targetYear} ${targetSem === 1 ? '1st Semester' : targetSem === 2 ? '2nd Semester' : 'Summer'}.`);
       return;
     }
 
@@ -287,8 +322,37 @@ export default function Tracker() {
     });
   };
 
+  const handleSelectAll = (courses: Course[]) => {
+    if (activeTerm?.status === 'completed') return;
+    
+    // Filter for selectable courses (not locked by prerequisites)
+    const selectableCourses = courses.filter(course => {
+        const pastInstance = studentCourses.find(sc => sc.course_id === course.id);
+        const wasTaken = !!pastInstance;
+        const missingPrereqs = getMissingPrereqs(course.id);
+        const isLocked = !wasTaken && missingPrereqs.length > 0;
+        return !isLocked;
+    });
+
+    if (selectableCourses.length === 0) return;
+
+    const allSelectableSelected = selectableCourses.every(c => selectedCourseIds.has(c.id));
+
+    setSelectedCourseIds(prev => {
+        const next = new Set(prev);
+        if (allSelectableSelected) {
+            // Deselect all in this group
+            selectableCourses.forEach(c => next.delete(c.id));
+        } else {
+            // Select all selectable in this group
+            selectableCourses.forEach(c => next.add(c.id));
+        }
+        return next;
+    });
+  };
+
   const confirmEditTerm = async () => {
-    if (!activeTerm || !userId) return;
+    if (!activeTerm || !targetUserId) return;
 
     // Delete all terms that come AFTER the active term
     const termsToDelete = studentTerms.filter(t => 
@@ -308,9 +372,9 @@ export default function Tracker() {
   };
 
   const saveProgress = async () => {
-    if (!userId) return;
+    if (!targetUserId) return;
     
-    if (totalUnits > 24 && !isOverloading) {
+    if (totalUnits > 26 && !isOverloading) {
       setWarningMessage("Please accept the overload warning first.");
       return;
     }
@@ -325,7 +389,7 @@ export default function Tracker() {
     const { data: termData, error: termError } = await supabase
       .from('student_terms')
       .upsert({
-        student_id: userId,
+        student_id: targetUserId,
         year_level: activeYear,
         semester: activeSem,
         is_overloaded: isOverloading,
@@ -381,11 +445,13 @@ export default function Tracker() {
     }
 
     await fetchData(); // Re-fetch to update UI state
-    setIsSuccessModalOpen(true);
+    setInfoMessage(`Your academic journey for Year ${activeYear} ${activeSem === 1 ? '1st Semester' : activeSem === 2 ? '2nd Semester' : 'Summer'} has been successfully recorded.`);
     
     // Automatically move to next logical term if possible
     if (activeSem === 1) {
       setActiveSem(2);
+    } else if (activeSem === 2) {
+      setActiveSem(3);
     } else {
       if (activeYear < 4) {
         setActiveYear(activeYear + 1);
@@ -395,7 +461,7 @@ export default function Tracker() {
   };
 
   const finalizeCurriculum = async () => {
-    if (!userId) return;
+    if (!targetUserId) return;
     
     // Find all 'enrolled' courses for this student and mark them 'passed'
     const termIds = studentTerms.map(t => t.id);
@@ -411,8 +477,10 @@ export default function Tracker() {
 
   return (
     <div className="p-8 pb-32">
-      <div className="max-w-[1280px] mx-auto relative">
-        <h1 className="text-3xl font-bold font-['Space_Grotesk'] mb-8">Curriculum Tracker</h1>
+      <div className="w-full relative">
+        <h1 className="text-3xl font-bold font-['Space_Grotesk'] mb-8">
+          Curriculum Tracker{(isViewingOther ? studentName : profile?.name) ? <span className="text-indigo-400"> — {isViewingOther ? studentName : profile?.name}</span> : ''}
+        </h1>
 
         {/* Warning Popover (Fixed Floating) */}
         {warningMessage && (
@@ -425,6 +493,22 @@ export default function Tracker() {
                     <p className="text-xs text-white/90 leading-tight">{warningMessage}</p>
                 </div>
                 <button onClick={() => setWarningMessage(null)} className="p-2 hover:bg-white/20 rounded-full transition-colors">
+                    <span className="material-symbols-outlined text-sm">close</span>
+                </button>
+            </div>
+        )}
+
+        {/* Info Popover (Fixed Floating) */}
+        {infoMessage && (
+            <div className="fixed top-8 right-8 z-[100] bg-indigo-500 text-white px-6 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-300 border border-indigo-400/20 backdrop-blur-md">
+                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-white" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                </div>
+                <div className="flex-1 min-w-[200px]">
+                    <h4 className="font-bold text-sm">Progress Saved</h4>
+                    <p className="text-xs text-white/90 leading-tight">{infoMessage}</p>
+                </div>
+                <button onClick={() => setInfoMessage(null)} className="p-2 hover:bg-white/20 rounded-full transition-colors">
                     <span className="material-symbols-outlined text-sm">close</span>
                 </button>
             </div>
@@ -457,7 +541,7 @@ export default function Tracker() {
                 <div className="flex items-center gap-4">
                     <span className="text-slate-400 font-bold uppercase text-sm tracking-wider w-24">Semester</span>
                     <div className="flex flex-wrap gap-2">
-                    {[1, 2].map(s => (
+                    {[1, 2, 3].map(s => (
                         <button 
                         key={s}
                         onClick={() => handleTermSelect(activeYear, s)}
@@ -467,11 +551,21 @@ export default function Tracker() {
                             : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
                         }`}
                         >
-                        {s}{s === 1 ? 'st' : 'nd'} Semester
+                        {s === 1 ? '1st Semester' : s === 2 ? '2nd Semester' : 'Summer'}
                         </button>
                     ))}
                     </div>
                 </div>
+
+                {/* Optional Summer Warning */}
+                {activeSem === 3 && activeTerm?.status !== 'completed' && (
+                  <div className="mt-2 p-3 rounded-xl border border-indigo-500/30 bg-indigo-500/5 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <span className="material-symbols-outlined text-indigo-400 text-lg">info</span>
+                    <p className="text-[11px] font-bold text-indigo-200/80 leading-tight">
+                      Enrollment into a Summer class is <span className="text-indigo-400 uppercase">Optional</span>. If you do not wish to enroll, you can simply click <span className="text-white underline">Save Progress</span> to skip this term and move on.
+                    </p>
+                  </div>
+                )}
 
                 {/* Closed Term Warning */}
                 {activeTerm?.status === 'completed' && (
@@ -489,7 +583,7 @@ export default function Tracker() {
                <h3 className="text-lg font-bold text-white mb-2">Term Summary ({activeYear} Year, Sem {activeSem})</h3>
                <div className="flex justify-between items-center py-4 border-b border-slate-800">
                   <span className="text-slate-400">Total Units Selected</span>
-                  <span className={`text-2xl font-bold ${totalUnits > 24 ? 'text-red-400' : 'text-indigo-400'}`}>{totalUnits} / 24</span>
+                  <span className={`text-2xl font-bold ${totalUnits > 26 ? 'text-red-400' : 'text-indigo-400'}`}>{totalUnits} / 26</span>
                </div>
 
                {showOverloadWarning && (
@@ -512,7 +606,7 @@ export default function Tracker() {
 
                <div className="mt-auto flex flex-col gap-4 pt-6">
                  <div className="flex gap-4">
-                     {activeTerm?.status === 'completed' && (
+                     {canEdit && activeTerm?.status === 'completed' && (
                          <button 
                              onClick={() => setIsEditModalOpen(true)}
                              className="flex-1 bg-slate-800 text-white font-bold py-3 rounded-lg shadow-lg hover:bg-slate-700 transition-all border border-slate-700"
@@ -520,43 +614,150 @@ export default function Tracker() {
                              Edit Term
                          </button>
                      )}
-                     <button 
-                        onClick={saveProgress}
-                        className="flex-1 bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-indigo-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={activeTerm?.status === 'completed'}
-                     >
-                        {activeTerm?.status === 'completed' ? 'Term Saved' : 'Save Progress'}
-                     </button>
+                     {canEdit && (
+                         <button 
+                            onClick={saveProgress}
+                            className="flex-1 bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-indigo-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={activeTerm?.status === 'completed'}
+                         >
+                            {activeTerm?.status === 'completed' ? 'Term Saved' : 'Save Progress'}
+                         </button>
+                     )}
                  </div>
                  
-                 {/* Finalize Curriculum Prompt for 4th Year 2nd Sem */}
-                 {activeYear === 4 && activeSem === 2 && activeTerm?.status === 'completed' && (
+                 {/* Finalize Curriculum Prompt for 4th Year Summer */}
+                 {activeYear === 4 && activeSem === 3 && activeTerm?.status === 'completed' && (
                      <div className="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex flex-col items-center text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
                          <span className="material-symbols-outlined text-green-400 text-3xl mb-2">workspace_premium</span>
                          <h4 className="text-white font-bold mb-1">Graduation Ready?</h4>
                          <p className="text-xs text-slate-400 mb-4">You have completed the final term. Finalize your curriculum to mark your final courses as passed.</p>
-                         <button 
-                             onClick={finalizeCurriculum}
-                             className="w-full bg-green-500 hover:bg-green-400 text-slate-900 font-bold py-2 rounded-lg shadow-lg transition-all"
-                         >
-                             Finalize Curriculum
-                         </button>
+                         {canEdit && (
+                             <button 
+                                 onClick={finalizeCurriculum}
+                                 className="w-full bg-gradient-to-r from-green-500 to-emerald-400 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-green-500/25 transition-all"
+                             >
+                                 Finalize Curriculum
+                             </button>
+                         )}
                      </div>
                  )}
                </div>
             </div>
         </div>
 
-        {/* BOTTOM SECTION: Universal Prescribed Courses List */}
+        {/* BOTTOM SECTION: Course List */}
         <div className="bg-[#131b2e] border border-slate-800 rounded-2xl p-8">
             <h2 className="text-2xl font-bold text-indigo-300 mb-8 pb-4 border-b border-indigo-500/20">
-              Universal Course List
+              Course List
             </h2>
             
             <div className="w-full">
-                {[1, 2, 3, 4].map(y => {
-                    const hasCoursesYear = groupedCourses[y][1].length > 0 || groupedCourses[y][2].length > 0;
+                {(() => {
+                    const yearOrder = [];
+                    for (let i = activeYear; i <= 4; i++) yearOrder.push(i);
+                    for (let i = 1; i < activeYear; i++) yearOrder.push(i);
+                    return yearOrder;
+                })().map(y => {
+                    const hasCoursesYear = groupedCourses[y][1].length > 0 || groupedCourses[y][2].length > 0 || groupedCourses[y][3].length > 0;
                     if (!hasCoursesYear) return null;
+                    
+                    const renderCourseCard = (course: Course) => {
+                        const isSelected = selectedCourseIds.has(course.id);
+                        const isTermCompleted = activeTerm?.status === 'completed';
+                        
+                        const pastInstance = studentCourses.find(sc => sc.course_id === course.id);
+                        const wasTaken = !!pastInstance;
+                        const takenInActiveTerm = pastInstance?.student_term_id === activeTerm?.id;
+                        const canRetake = wasTaken && !takenInActiveTerm && !isTermCompleted;
+
+                        const missingPrereqs = getMissingPrereqs(course.id);
+                        const isLocked = !wasTaken && missingPrereqs.length > 0;
+                        const isInteractive = canEdit && (!wasTaken || canRetake || isSelected) && !isTermCompleted && !isLocked;
+
+                        const isTakingCourse = studentCourses.some(sc => sc.course_id === course.id && sc.status === 'enrolled');
+                        // For styling, if it's taking course, but not actively selected in the current editable term
+                        const shouldShowTaking = isTakingCourse && (!isSelected || isTermCompleted);
+
+                        return (
+                            <div 
+                                key={course.id}
+                                onClick={() => {
+                                    if (isInteractive && !canRetake) {
+                                        toggleCourseSelection(course.id);
+                                    }
+                                }}
+                                className={`p-4 rounded-xl border flex items-center gap-4 transition-all group relative ${
+                                    isSelected && !isTermCompleted
+                                        ? 'bg-indigo-500/10 border-indigo-500 ring-2 ring-indigo-500/20' 
+                                        : isLocked
+                                            ? 'bg-slate-900/30 border-slate-800/50 opacity-40 grayscale-[0.5]'
+                                            : wasTaken && !takenInActiveTerm
+                                                ? 'bg-slate-900/40 border-slate-800 opacity-60'
+                                                : 'bg-slate-900/80 border-slate-700'
+                                } ${isInteractive && !canRetake ? 'cursor-pointer hover:border-indigo-400/50' : ''}`}
+                            >
+                                <div className="flex items-center justify-center">
+                                    {isLocked ? (
+                                        <div className="w-6 h-6 flex items-center justify-center text-slate-500">
+                                            <span className="material-symbols-outlined text-[20px]">lock</span>
+                                        </div>
+                                    ) : (
+                                        <input 
+                                            type="checkbox" 
+                                            checked={isSelected || (wasTaken && !takenInActiveTerm)}
+                                            onChange={() => {}} 
+                                            className="w-6 h-6 rounded bg-slate-900 border-slate-600 text-indigo-500 focus:ring-indigo-500 pointer-events-none"
+                                        />
+                                    )}
+                                </div>
+                                <div className="flex-1 flex flex-col justify-center">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs font-bold text-indigo-400">{course.code}</span>
+                                        <span className="text-xs text-slate-500 font-medium">{course.units} Units</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-sm font-medium mt-1 text-slate-200">{course.title}</p>
+                                        {isLocked && (
+                                            <span className="mt-1 text-[9px] font-black text-red-400 uppercase tracking-wider bg-red-500/10 px-2 py-0.5 rounded-full border border-red-500/20 flex items-center gap-1.5 whitespace-nowrap shadow-[0_0_10px_rgba(239,68,68,0.1)]">
+                                                <span className="w-1 h-1 rounded-full bg-red-500 animate-pulse"></span>
+                                                Prerequisites not done
+                                            </span>
+                                        )}
+                                        {shouldShowTaking && !isLocked && (
+                                            <span className="mt-1 text-[9px] font-black text-blue-400 uppercase tracking-wider bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20 flex items-center gap-1.5 whitespace-nowrap shadow-[0_0_10px_rgba(59,130,246,0.1)]">
+                                                <span className="w-1 h-1 rounded-full bg-blue-500 animate-pulse"></span>
+                                                Currently Taking
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="ml-2 flex items-center gap-3">
+                                    {canRetake && (
+                                        <button 
+                                            onClick={(e) => canEdit && handleRetakeCourse(course.id, e)}
+                                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                                                isSelected 
+                                                    ? 'bg-red-500/20 text-red-400 border-red-500/30' 
+                                                    : 'bg-indigo-500 text-white border-indigo-400 hover:scale-105'
+                                            } ${!canEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        >
+                                            {isSelected ? 'Retaking' : 'Retake'}
+                                        </button>
+                                    )}
+                                    <button 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedCourseDetails(course);
+                                        }}
+                                        className="px-4 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-700 hover:text-cyan-400 transition-all border border-slate-700"
+                                    >
+                                        Info
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    };
                     
                     return (
                     <div key={y} className="mb-12">
@@ -572,109 +773,62 @@ export default function Tracker() {
                                 
                                 return (
                                     <div key={s} className="pl-6 border-l-2 border-indigo-500/20">
-                                        <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                            Semester {s}
-                                            {activeYear === y && activeSem === s && (
-                                                <span className="bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded text-[10px]">CURRENT TARGET</span>
-                                            )}
-                                        </h4>
-                                        
-                                        <div className="space-y-3">
-                                            {courses.map(course => {
-                                            const isSelected = selectedCourseIds.has(course.id);
-                                            const isTermCompleted = activeTerm?.status === 'completed';
-                                            const isTargetTerm = activeYear === course.year_level && activeSem === course.semester;
-                                            
-                                            // Find past instance logic
-                                            const pastInstance = studentCourses.find(sc => sc.course_id === course.id);
-                                            const wasTaken = !!pastInstance;
-                                            const takenInActiveTerm = pastInstance?.student_term_id === activeTerm?.id;
-                                            const canRetake = wasTaken && !takenInActiveTerm && !isTermCompleted;
-
-                                            // Determine interaction state
-                                            const missingPrereqs = getMissingPrereqs(course.id);
-                                            const isLocked = !wasTaken && missingPrereqs.length > 0;
-                                            const isInteractive = (!wasTaken || canRetake || isSelected) && !isTermCompleted && !isLocked;
-
-                                            return (
-                                                <div 
-                                                    key={course.id}
-                                                    onClick={() => {
-                                                        if (isInteractive && !canRetake) {
-                                                            toggleCourseSelection(course.id);
-                                                        }
-                                                    }}
-                                                    className={`p-4 rounded-xl border flex items-center gap-4 transition-all group relative ${
-                                                        isSelected 
-                                                            ? 'bg-indigo-500/10 border-indigo-500 ring-2 ring-indigo-500/20' 
-                                                            : isLocked
-                                                                ? 'bg-slate-900/30 border-slate-800/50 opacity-40 grayscale-[0.5]'
-                                                                : wasTaken && !takenInActiveTerm
-                                                                    ? 'bg-slate-900/40 border-slate-800 opacity-60'
-                                                                    : 'bg-slate-900/80 border-slate-700'
-                                                    } ${isInteractive && !canRetake ? 'cursor-pointer hover:border-indigo-400/50' : ''}`}
+                                        <div className="flex justify-between items-center mb-4 pr-2">
+                                            <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                                Semester {s}
+                                                {activeYear === y && activeSem === s && (
+                                                    <span className="bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded text-[10px]">CURRENT TARGET</span>
+                                                )}
+                                            </h4>
+                                            {activeYear === y && activeSem === s && activeTerm?.status !== 'completed' && (
+                                                <button 
+                                                    onClick={() => handleSelectAll(courses)}
+                                                    className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 transition-colors uppercase tracking-widest bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20"
                                                 >
-                                                    <div className="flex items-center justify-center">
-                                                        {isLocked ? (
-                                                            <div className="w-6 h-6 flex items-center justify-center text-slate-500">
-                                                                <span className="material-symbols-outlined text-[20px]">lock</span>
-                                                            </div>
-                                                        ) : (
-                                                            <input 
-                                                                type="checkbox" 
-                                                                checked={isSelected || (wasTaken && !takenInActiveTerm)}
-                                                                onChange={() => {}} 
-                                                                className="w-6 h-6 rounded bg-slate-900 border-slate-600 text-indigo-500 focus:ring-indigo-500 pointer-events-none"
-                                                            />
-                                                        )}
-                                                    </div>
-                                                    <div className="flex-1 flex flex-col justify-center">
-                                                        <div className="flex justify-between items-center">
-                                                            <span className="text-xs font-bold text-indigo-400">{course.code}</span>
-                                                            <span className="text-xs text-slate-500 font-medium">{course.units} Units</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-2">
-                                                            <p className="text-sm font-medium mt-1 text-slate-200">{course.title}</p>
-                                                            {isLocked && (
-                                                                <span className="mt-1 text-[9px] font-black text-red-400 uppercase tracking-wider bg-red-500/10 px-2 py-0.5 rounded-full border border-red-500/20 flex items-center gap-1.5 whitespace-nowrap shadow-[0_0_10px_rgba(239,68,68,0.1)]">
-                                                                    <span className="w-1 h-1 rounded-full bg-red-500 animate-pulse"></span>
-                                                                    Prerequisites not done
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="ml-2 flex items-center gap-3">
-                                                        {canRetake && (
-                                                            <button 
-                                                                onClick={(e) => handleRetakeCourse(course.id, e)}
-                                                                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
-                                                                    isSelected 
-                                                                        ? 'bg-red-500/20 text-red-400 border-red-500/30' 
-                                                                        : 'bg-indigo-500 text-white border-indigo-400 hover:scale-105'
-                                                                }`}
-                                                            >
-                                                                {isSelected ? 'Retaking' : 'Retake'}
-                                                            </button>
-                                                        )}
-                                                        <button 
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                setSelectedCourseDetails(course);
-                                                            }}
-                                                            className="px-4 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-700 hover:text-cyan-400 transition-all border border-slate-700"
-                                                        >
-                                                            Info
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
+                                                    {courses.filter(c => {
+                                                        const { isPassed } = getPrereqStatus(c.id);
+                                                        const missing = getMissingPrereqs(c.id);
+                                                        return !isPassed && missing.length === 0;
+                                                    }).every(c => selectedCourseIds.has(c.id)) ? 'Deselect All' : 'Select All'}
+                                                </button>
+                                            )}
+                                        </div>
+                                        <div className="space-y-3">
+                                            {courses.map(renderCourseCard)}
                                         </div>
                                     </div>
                                 );
                             })}
                         </div>
+                        
+                        {/* Summer Term Rendering (Full Width below Sem 1 & 2) */}
+                        {groupedCourses[y][3].length > 0 && (
+                            <div className="mt-8 pl-6 border-l-2 border-indigo-500/20">
+                                <div className="flex justify-between items-center mb-4 pr-2">
+                                    <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                        Summer
+                                        {activeYear === y && activeSem === 3 && (
+                                            <span className="bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded text-[10px]">CURRENT TARGET</span>
+                                        )}
+                                    </h4>
+                                    {activeYear === y && activeSem === 3 && activeTerm?.status !== 'completed' && (
+                                        <button 
+                                            onClick={() => handleSelectAll(groupedCourses[y][3])}
+                                            className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 transition-colors uppercase tracking-widest bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20"
+                                        >
+                                            {groupedCourses[y][3].filter(c => {
+                                                const { isPassed } = getPrereqStatus(c.id);
+                                                const missing = getMissingPrereqs(c.id);
+                                                return !isPassed && missing.length === 0;
+                                            }).every(c => selectedCourseIds.has(c.id)) ? 'Deselect All' : 'Select All'}
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {groupedCourses[y][3].map(renderCourseCard)}
+                                </div>
+                            </div>
+                        )}
                     </div>
                     );
                 })}
@@ -776,33 +930,6 @@ export default function Tracker() {
           className="fixed inset-0 bg-black/40 z-[50] transition-opacity"
           onClick={() => setSelectedCourseDetails(null)}
         />
-      )}
-
-      {/* Success Modal */}
-      {isSuccessModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div 
-            className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-300"
-            onClick={() => setIsSuccessModalOpen(false)}
-          ></div>
-          <div className="relative bg-[#131b2e] border border-indigo-500/30 rounded-3xl p-8 max-w-sm w-full shadow-2xl shadow-black/50 animate-in zoom-in-95 duration-300">
-            <div className="flex flex-col items-center text-center">
-              <div className="w-16 h-16 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6">
-                <span className="material-symbols-outlined text-indigo-400 text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-2 font-['Space_Grotesk']">Progress Saved!</h3>
-              <p className="text-slate-400 text-sm mb-8">
-                Your academic journey for Year {activeYear} Semester {activeSem} has been successfully recorded.
-              </p>
-              <button 
-                onClick={() => setIsSuccessModalOpen(false)}
-                className="w-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all"
-              >
-                Continue Exploring
-              </button>
-            </div>
-          </div>
-        </div>
       )}
 
       {/* Edit Confirmation Modal */}
