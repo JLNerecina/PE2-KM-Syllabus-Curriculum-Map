@@ -478,7 +478,7 @@ export default function Tracker() {
     <div className="p-8 pb-32">
       <div className="w-full relative">
         <h1 className="text-3xl font-bold font-['Space_Grotesk'] mb-8">
-          Curriculum Tracker{isViewingOther && studentName ? <span className="text-indigo-400"> — {studentName}</span> : ''}
+          Curriculum Tracker{(isViewingOther ? studentName : profile?.name) ? <span className="text-indigo-400"> — {isViewingOther ? studentName : profile?.name}</span> : ''}
         </h1>
 
         {/* Warning Popover (Fixed Floating) */}

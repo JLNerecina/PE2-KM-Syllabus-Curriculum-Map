@@ -125,7 +125,7 @@ export default function Map() {
       <div className="w-full">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold font-['Space_Grotesk']">
-            Curriculum Map{isViewingOther && studentName ? <span className="text-indigo-400"> — {studentName}</span> : ''}
+            Curriculum Map{(isViewingOther ? studentName : profile?.name) ? <span className="text-indigo-400"> — {isViewingOther ? studentName : profile?.name}</span> : ''}
           </h1>
           <div className="flex gap-4">
             {isViewingOther && (
