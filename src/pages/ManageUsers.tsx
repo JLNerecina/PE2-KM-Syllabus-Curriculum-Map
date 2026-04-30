@@ -4,13 +4,15 @@ import type { Program, Department } from '../types';
 import UserListTab from './manage-users/UserListTab';
 import BulkEnrollmentTab from './manage-users/BulkEnrollmentTab';
 import PreAuthorizeTab from './manage-users/PreAuthorizeTab';
+import AuditTrailTab from './manage-users/AuditTrailTab';
 
-type Tab = 'user-list' | 'bulk-enrollment' | 'pre-authorize';
+type Tab = 'user-list' | 'bulk-enrollment' | 'pre-authorize' | 'audit-trail';
 
 const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: 'user-list', label: 'User List', icon: 'group' },
   { id: 'bulk-enrollment', label: 'Bulk Enrollment', icon: 'group_add' },
   { id: 'pre-authorize', label: 'Pre-Authorize', icon: 'person_add' },
+  { id: 'audit-trail', label: 'Audit Trail', icon: 'history' },
 ];
 
 export default function ManageUsers() {
@@ -65,6 +67,7 @@ export default function ManageUsers() {
         {activeTab === 'user-list' && <UserListTab programs={programs} departments={departments} />}
         {activeTab === 'bulk-enrollment' && <BulkEnrollmentTab programs={programs} departments={departments} />}
         {activeTab === 'pre-authorize' && <PreAuthorizeTab programs={programs} departments={departments} />}
+        {activeTab === 'audit-trail' && <AuditTrailTab />}
       </div>
     </div>
   );

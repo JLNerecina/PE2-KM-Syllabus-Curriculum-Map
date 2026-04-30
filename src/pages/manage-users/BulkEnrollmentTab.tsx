@@ -72,6 +72,20 @@ export default function BulkEnrollmentTab({ programs, departments }: Props) {
     if (error) {
       setFeedback({ type: 'error', message: `Enrollment failed: ${error.message}` });
     } else {
+      // Log bulk enrollment as a single summary audit entry
+      await supabase.from('audit_logs').insert({
+        actor_id: profile?.id,
+        action: 'bulk_enrollment.create',
+        target_table: 'preauthorized_users',
+        target_id: selectedProgramId,
+        target_label: selectedProgram?.code || 'Unknown Program',
+        metadata: {
+          count: validRows.length,
+          program: selectedProgram?.name,
+          program_code: selectedProgram?.code,
+          emails: validRows.map(r => r.email.trim()),
+        },
+      });
       setFeedback({ type: 'success', message: `Successfully pre-authorized ${validRows.length} student${validRows.length > 1 ? 's' : ''}.` });
       setRows(Array.from({ length: 5 }, makeRow));
     }

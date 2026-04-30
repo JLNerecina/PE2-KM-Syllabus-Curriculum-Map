@@ -51,3 +51,19 @@ export interface MapEdge {
   target_id: string; // The course that requires it
   type: 'prerequisite' | 'corequisite' | 'recommended';
 }
+
+export interface AuditLogEntry {
+  id: string;
+  created_at: string;
+  actor_id: string;
+  action: string;
+  target_table: string;
+  target_id: string;
+  target_label?: string;
+  changes?: Record<string, { old: unknown; new: unknown }>;
+  metadata?: Record<string, unknown>;
+  // Joined from profiles
+  actor_name?: string;
+  actor_email?: string;
+  actor_role?: UserRole;
+}
