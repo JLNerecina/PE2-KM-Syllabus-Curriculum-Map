@@ -157,8 +157,7 @@ export default function UserListTab({ programs }: Props) {
               <th className="px-8 py-4 border-b border-indigo-500/10">Email Address</th>
               <th className="px-8 py-4 border-b border-indigo-500/10">Role</th>
               <th className="px-8 py-4 border-b border-indigo-500/10">Program</th>
-              <th className="px-8 py-4 border-b border-indigo-500/10">Status</th>
-              <th className="px-8 py-4 border-b border-indigo-500/10 text-center">Soft Delete</th>
+              <th className="px-8 py-4 border-b border-indigo-500/10 text-center">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-indigo-500/10">
@@ -179,30 +178,25 @@ export default function UserListTab({ programs }: Props) {
                     <span className={`px-3 py-1 ${ROLE_COLORS[u.role]} rounded-full text-xs font-bold uppercase tracking-wider`}>{u.role}</span>
                   </td>
                   <td className="px-8 py-5 text-sm text-slate-400">{prog?.code || '—'}</td>
-                  <td className="px-8 py-5">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${u.is_deleted ? 'bg-red-400' : 'bg-emerald-400'}`}></span>
-                      <span className={`text-xs ${u.is_deleted ? 'text-red-400/80' : 'text-emerald-400/80'}`}>{u.is_deleted ? 'Deleted' : 'Active'}</span>
-                    </div>
-                  </td>
                   <td className="px-8 py-5 text-center">
                     {canToggle(u) ? (
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          checked={!u.is_deleted}
-                          disabled={togglingId === u.id}
-                          onChange={() => toggleSoftDelete(u)}
-                        />
-                        <div className="w-11 h-6 bg-slate-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                      </label>
+                      <button
+                        disabled={togglingId === u.id}
+                        onClick={() => toggleSoftDelete(u)}
+                        className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border ${
+                          u.is_deleted
+                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
+                            : 'bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20'
+                        }`}
+                      >
+                        {togglingId === u.id ? '...' : (u.is_deleted ? 'Unblock' : 'Block')}
+                      </button>
                     ) : (
                       <div className="relative group inline-block">
-                        <div className="w-11 h-6 bg-slate-700/50 rounded-full relative opacity-40 cursor-not-allowed">
-                          <div className={`absolute top-[2px] bg-white border-gray-300 border rounded-full h-5 w-5 ${!u.is_deleted ? 'left-[22px]' : 'left-[2px]'}`}></div>
-                        </div>
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-800 text-xs text-slate-300 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-slate-700">
+                        <button disabled className="px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-700/30 border border-slate-700/50 text-slate-500 cursor-not-allowed">
+                          {u.is_deleted ? 'Blocked' : 'Active'}
+                        </button>
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-800 text-xs text-slate-300 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-slate-700 z-10">
                           {currentUser?.id === u.id ? 'Cannot modify yourself' : 'Insufficient permissions'}
                         </div>
                       </div>
@@ -212,7 +206,7 @@ export default function UserListTab({ programs }: Props) {
               );
             })}
             {pageUsers.length === 0 && (
-              <tr><td colSpan={7} className="px-8 py-12 text-center text-slate-500">No users match your filters.</td></tr>
+              <tr><td colSpan={6} className="px-8 py-12 text-center text-slate-500">No users match your filters.</td></tr>
             )}
           </tbody>
         </table>
