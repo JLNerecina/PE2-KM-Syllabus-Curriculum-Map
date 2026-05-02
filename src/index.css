@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-container: #8083ff;
+  --color-inverse-surface: #dae2fd;
+  --color-outline: #908fa0;
+  --color-on-secondary-container: #00344e;
+  --color-surface-container: #171f33;
+  --color-inverse-on-surface: #283044;
+  --color-error-container: #93000a;
+  --color-primary: #c0c1ff;
+  --color-secondary-fixed-dim: #89ceff;
+  --color-on-primary-fixed: #07006c;
+  --color-on-tertiary: #3f2160;
+  --color-on-tertiary-fixed: #29074a;
+  --color-on-error-container: #ffdad6;
+  --color-tertiary-fixed: #efdbff;
+  --color-on-surface-variant: #c7c4d7;
+  --color-tertiary: #dbb8ff;
+  --color-surface-bright: #31394d;
+  --color-on-surface: #dae2fd;
+  --color-outline-variant: #464554;
+  --color-primary-fixed-dim: #c0c1ff;
+  --color-on-primary-container: #0d0096;
+  --color-secondary: #89ceff;
+  --color-on-primary: #1000a9;
+  --color-error: #ffb4ab;
+  --color-surface-variant: #2d3449;
+  --color-secondary-fixed: #c9e6ff;
+  --color-surface-container-high: #222a3d;
+  --color-on-tertiary-container: #381959;
+  --color-on-secondary: #00344d;
+  --color-surface-dim: #0b1326;
+  --color-on-secondary-fixed: #001e2f;
+  --color-on-primary-fixed-variant: #2f2ebe;
+  --color-surface-tint: #c0c1ff;
+  --color-surface-container-lowest: #060e20;
+  --color-primary-fixed: #e1e0ff;
+  --color-on-tertiary-fixed-variant: #573878;
+  --color-surface-container-highest: #2d3449;
+  --color-inverse-primary: #494bd6;
+  --color-tertiary-fixed-dim: #dbb8ff;
+  --color-on-background: #dae2fd;
+  --color-surface-container-low: #131b2e;
+  --color-on-secondary-fixed-variant: #004c6e;
+  --color-tertiary-container: #a482c8;
+  --color-surface: #0b1326;
+  --color-on-error: #690005;
+  --color-background: #0b1326;
+  --color-secondary-container: #00a2e6;
+  
+  --radius-DEFAULT: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+  
+  --spacing-stack-lg: 48px;
+  --spacing-stack-md: 24px;
+  --spacing-section-padding: 80px;
+  --spacing-stack-sm: 8px;
+  --spacing-margin-mobile: 16px;
+  --spacing-gutter: 24px;
+  --spacing-container-max: 1280px;
+  --spacing-unit: 4px;
+  
+  --font-headline-lg: "Space Grotesk";
+  --font-headline-md: "Space Grotesk";
+  --font-headline-xl: "Space Grotesk";
+  --font-body-md: "Inter";
+  --font-label-md: "Manrope";
+  --font-body-lg: "Inter";
+  --font-label-sm: "Manrope";
+
+  /* text sizing */
+  --text-headline-lg: 32px;
+  --text-headline-lg--line-height: 1.2;
+  --text-headline-lg--font-weight: 600;
+
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 1.3;
+  --text-headline-md--font-weight: 500;
+
+  --text-headline-xl: 48px;
+  --text-headline-xl--line-height: 1.1;
+  --text-headline-xl--letter-spacing: -0.02em;
+  --text-headline-xl--font-weight: 700;
+
+  --text-body-md: 16px;
+  --text-body-md--line-height: 1.5;
+  --text-body-md--font-weight: 400;
+
+  --text-label-md: 14px;
+  --text-label-md--line-height: 1.4;
+  --text-label-md--letter-spacing: 0.05em;
+  --text-label-md--font-weight: 600;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 1.6;
+  --text-body-lg--font-weight: 400;
+
+  --text-label-sm: 12px;
+  --text-label-sm--line-height: 1.2;
+  --text-label-sm--font-weight: 700;
+}
+
+@layer base {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  /* Custom scrollbar for subtle glass feel */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(11, 19, 38, 0.5);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(128, 131, 255, 0.2);
+    border-radius: 10px;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    background: rgba(23, 31, 51, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(192, 193, 255, 0.15);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+  .inner-glow {
+    box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  .spectral-gradient {
+    background: linear-gradient(135deg, #6366f1 0%, #22d3ee 100%);
+  }
+  .curriculum-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+}

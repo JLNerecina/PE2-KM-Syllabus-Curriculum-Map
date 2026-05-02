@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #0b1326;
+            color: #dae2fd;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-container": "#8083ff",
+                      "inverse-surface": "#dae2fd",
+                      "outline": "#908fa0",
+                      "on-secondary-container": "#00344e",
+                      "surface-container": "#171f33",
+                      "inverse-on-surface": "#283044",
+                      "error-container": "#93000a",
+                      "primary": "#c0c1ff",
+                      "secondary-fixed-dim": "#89ceff",
+                      "on-primary-fixed": "#07006c",
+                      "on-tertiary": "#3f2160",
+                      "on-tertiary-fixed": "#29074a",
+                      "on-error-container": "#ffdad6",
+                      "tertiary-fixed": "#efdbff",
+                      "on-surface-variant": "#c7c4d7",
+                      "tertiary": "#dbb8ff",
+                      "surface-bright": "#31394d",
+                      "on-surface": "#dae2fd",
+                      "outline-variant": "#464554",
+                      "primary-fixed-dim": "#c0c1ff",
+                      "on-primary-container": "#0d0096",
+                      "secondary": "#89ceff",
+                      "on-primary": "#1000a9",
+                      "error": "#ffb4ab",
+                      "surface-variant": "#2d3449",
+                      "secondary-fixed": "#c9e6ff",
+                      "surface-container-high": "#222a3d",
+                      "on-tertiary-container": "#381959",
+                      "on-secondary": "#00344d",
+                      "surface-dim": "#0b1326",
+                      "on-secondary-fixed": "#001e2f",
+                      "on-primary-fixed-variant": "#2f2ebe",
+                      "surface-tint": "#c0c1ff",
+                      "surface-container-lowest": "#060e20",
+                      "primary-fixed": "#e1e0ff",
+                      "on-tertiary-fixed-variant": "#573878",
+                      "surface-container-highest": "#2d3449",
+                      "inverse-primary": "#494bd6",
+                      "tertiary-fixed-dim": "#dbb8ff",
+                      "on-background": "#dae2fd",
+                      "surface-container-low": "#131b2e",
+                      "on-secondary-fixed-variant": "#004c6e",
+                      "tertiary-container": "#a482c8",
+                      "surface": "#0b1326",
+                      "on-error": "#690005",
+                      "background": "#0b1326",
+                      "secondary-container": "#00a2e6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-lg": "48px",
+                      "stack-md": "24px",
+                      "section-padding": "80px",
+                      "stack-sm": "8px",
+                      "margin-mobile": "16px",
+                      "gutter": "24px",
+                      "container-max": "1280px",
+                      "unit": "4px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Space Grotesk"],
+                      "headline-md": ["Space Grotesk"],
+                      "headline-xl": ["Space Grotesk"],
+                      "body-md": ["Inter"],
+                      "label-md": ["Manrope"],
+                      "body-lg": ["Inter"],
+                      "label-sm": ["Manrope"]
+              },
+              "fontSize": {
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                      "headline-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="font-body-md overflow-x-hidden">
+<!-- TopAppBar Shell -->
+<header class="sticky top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/80 backdrop-blur-lg border-b border-indigo-500/20 shadow-lg shadow-indigo-500/5">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold bg-gradient-to-r from-indigo-500 to-cyan-400 bg-clip-text text-transparent font-headline-md">CICS Curriculum Map</span>
+</div>
+<div class="flex-1 max-w-xl mx-8 hidden md:block">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant/30 rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all" placeholder="Search across portal..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-400 hover:bg-indigo-500/10 transition-colors duration-200 rounded-full relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-indigo-500 rounded-full"></span>
+</button>
+<button class="p-2 text-slate-400 hover:bg-indigo-500/10 transition-colors duration-200 rounded-full">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border-2 border-indigo-500/30">
+<img alt="User Profile Avatar" data-alt="close up professional headshot of a female professor in tech setting with soft atmospheric blue backlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsfhnMEba29a1u8M-Bb9pIoFNWXwtDsnoEmiU2kaLGEoGaqTfdiDOVzkwAjcILLYvIwBbQo19qpwx8AptDD5wmua6MBJw2Wk7DY9yWJIosaATpwwQoidlk1OmDh0a89RpEspbplpIvtpPQqam4HeAdHWpeZY1gAwmlkbzgIBej6sxwhvjKC27LVrQXL6SO5YjTe_tN-AfHiSiQ583XJP1-AzVwghkQmowLCuj8mBGTlSh-Sf1ha2GDvBrU-ud2dkJtalr-vfc5dhc"/>
+</div>
+</div>
+</header>
+<div class="flex">
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-slate-950/90 backdrop-blur-xl border-r border-indigo-500/10 shadow-2xl shadow-black z-40 hidden md:flex flex-col py-6 gap-2">
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 text-slate-500 hover:text-slate-200 px-4 py-3 hover:bg-indigo-500/5 transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 hover:text-slate-200 px-4 py-3 hover:bg-indigo-500/5 transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-label-md">Curriculum</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 hover:text-slate-200 px-4 py-3 hover:bg-indigo-500/5 transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-md">Faculty</span>
+</a>
+<a class="flex items-center gap-3 bg-indigo-500/15 text-indigo-400 border-r-2 border-indigo-500 rounded-r-lg px-4 py-3 hover:bg-indigo-500/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">admin_panel_settings</span>
+<span class="font-label-md">Admin Panel</span>
+</a>
+</nav>
+<div class="px-4 mt-auto">
+<a class="flex items-center gap-3 text-slate-500 hover:text-red-400 px-4 py-3 hover:bg-red-500/5 transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 p-8 min-h-screen">
+<div class="max-w-container-max mx-auto space-y-stack-md">
+<!-- Page Header & Tab Switching -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="space-y-1">
+<h1 class="font-headline-xl text-on-surface">Super Admin Management</h1>
+<p class="text-on-surface-variant font-body-lg">Oversee institutional users and facilitate rapid enrollment protocols.</p>
+</div>
+<div class="flex bg-surface-container-low p-1 rounded-xl border border-outline-variant/20 shadow-inner">
+<button class="px-6 py-2 bg-primary-container/20 text-primary font-label-md rounded-lg shadow-sm">User List</button>
+<button class="px-6 py-2 text-slate-400 hover:text-slate-200 font-label-md transition-colors">Bulk Enrollment</button>
+</div>
+</div>
+<!-- Glassmorphism Container: User List View -->
+<div class="bg-surface-container/40 backdrop-blur-xl border border-primary/20 rounded-2xl overflow-hidden shadow-2xl">
+<div class="p-6 border-b border-indigo-500/10 flex justify-between items-center">
+<div class="flex gap-4">
+<span class="px-4 py-2 bg-surface-bright rounded-lg text-sm text-indigo-300 border border-indigo-500/20 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">filter_alt</span>
+                                Filter
+                            </span>
+<span class="px-4 py-2 bg-surface-bright rounded-lg text-sm text-indigo-300 border border-indigo-500/20 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">sort</span>
+                                Sort
+                            </span>
+</div>
+<button class="bg-gradient-to-r from-indigo-500 to-cyan-500 text-white font-label-md px-6 py-2.5 rounded-lg shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] transition-all">
+                            Add Single User
+                        </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high/50 text-indigo-300 font-label-sm uppercase tracking-widest text-[11px]">
+<th class="px-8 py-4 border-b border-indigo-500/10">ID</th>
+<th class="px-8 py-4 border-b border-indigo-500/10">Full Name</th>
+<th class="px-8 py-4 border-b border-indigo-500/10">Email Address</th>
+<th class="px-8 py-4 border-b border-indigo-500/10">Role</th>
+<th class="px-8 py-4 border-b border-indigo-500/10">Status</th>
+<th class="px-8 py-4 border-b border-indigo-500/10 text-center">Soft Delete</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-indigo-500/10">
+<tr class="hover:bg-indigo-500/5 transition-colors group">
+<td class="px-8 py-5 text-sm text-slate-400">#CS-2024-001</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-xs font-bold text-indigo-400">AA</div>
+<span class="font-medium text-on-surface">Dr. Aris Amadora</span>
+</div>
+</td>
+<td class="px-8 py-5 text-sm text-on-surface-variant">a.amadora@cics.edu</td>
+<td class="px-8 py-5">
+<span class="px-3 py-1 bg-tertiary-container/20 text-tertiary rounded-full text-xs font-label-sm">Faculty</span>
+</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+<span class="text-xs text-emerald-400/80">Active</span>
+</div>
+</td>
+<td class="px-8 py-5 text-center">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+</label>
+</td>
+</tr>
+<tr class="hover:bg-indigo-500/5 transition-colors group">
+<td class="px-8 py-5 text-sm text-slate-400">#ST-2024-882</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center text-xs font-bold text-cyan-400">JM</div>
+<span class="font-medium text-on-surface">John Marciano</span>
+</div>
+</td>
+<td class="px-8 py-5 text-sm text-on-surface-variant">j.marciano@cics.student.edu</td>
+<td class="px-8 py-5">
+<span class="px-3 py-1 bg-secondary-container/20 text-secondary rounded-full text-xs font-label-sm">Student</span>
+</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+<span class="text-xs text-emerald-400/80">Active</span>
+</div>
+</td>
+<td class="px-8 py-5 text-center">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+</label>
+</td>
+</tr>
+<tr class="hover:bg-indigo-500/5 transition-colors group">
+<td class="px-8 py-5 text-sm text-slate-400">#ST-2024-411</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-500/20 flex items-center justify-center text-xs font-bold text-slate-400">SV</div>
+<span class="font-medium text-on-surface">Sarah Villena</span>
+</div>
+</td>
+<td class="px-8 py-5 text-sm text-on-surface-variant">s.villena@cics.student.edu</td>
+<td class="px-8 py-5">
+<span class="px-3 py-1 bg-secondary-container/20 text-secondary rounded-full text-xs font-label-sm">Student</span>
+</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="text-xs text-error/80">Deleted</span>
+</div>
+</td>
+<td class="px-8 py-5 text-center">
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+</label>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Bulk Enrollment Section (Conditional Simulation) -->
+<div class="mt-stack-lg space-y-stack-md">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-indigo-400 bg-indigo-500/10 p-2 rounded-lg">group_add</span>
+<h2 class="font-headline-md text-on-surface">Bulk Enrollment Protocol</h2>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Top/Left: Control Parameters -->
+<div class="bg-surface-container-low/40 backdrop-blur-md p-8 rounded-2xl border border-indigo-500/10 space-y-6 lg:col-span-1">
+<h3 class="text-sm font-label-md text-indigo-300 uppercase tracking-widest">Configuration</h3>
+<div class="space-y-1">
+<label class="text-xs font-label-sm text-slate-400">Academic Program</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 transition-all text-on-surface">
+<option>B.S. Computer Science</option>
+<option>B.S. Information Technology</option>
+<option>B.S. Data Science</option>
+</select>
+</div>
+<div class="space-y-1">
+<label class="text-xs font-label-sm text-slate-400">Academic Year</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 transition-all text-on-surface">
+<option>1st Year</option>
+<option>2nd Year</option>
+<option>3rd Year</option>
+<option>4th Year</option>
+</select>
+</div>
+<div class="space-y-1">
+<label class="text-xs font-label-sm text-slate-400">Section Assignment</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 transition-all text-on-surface">
+<option>CS-101 (Alpha)</option>
+<option>CS-102 (Beta)</option>
+<option>CS-103 (Gamma)</option>
+</select>
+</div>
+<div class="pt-4 p-4 rounded-xl bg-indigo-500/5 border border-indigo-500/10">
+<p class="text-xs text-indigo-300 leading-relaxed italic">
+                                    Enrollment will automatically map courses based on the current curriculum version (v4.2 - 2024).
+                                </p>
+</div>
+</div>
+<!-- Bottom/Right: Entry Table -->
+<div class="lg:col-span-2 space-y-6">
+<div class="bg-surface-container/30 backdrop-blur-sm border border-indigo-500/10 rounded-2xl overflow-hidden">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-slate-900/50 text-indigo-300 text-[11px] font-label-sm uppercase tracking-widest">
+<th class="px-6 py-4">S.N.</th>
+<th class="px-6 py-4">Student Number</th>
+<th class="px-6 py-4">Full Name</th>
+<th class="px-6 py-4">Institutional Email</th>
+<th class="px-6 py-4"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-indigo-500/10">
+<!-- Row 1 -->
+<tr class="group">
+<td class="px-6 py-4 text-xs text-slate-500">01</td>
+<td class="px-6 py-4"><input class="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none w-full text-sm py-1" placeholder="2024-XXXX" type="text"/></td>
+<td class="px-6 py-4"><input class="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none w-full text-sm py-1" placeholder="First M. Last" type="text"/></td>
+<td class="px-6 py-4"><input class="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none w-full text-sm py-1" placeholder="user@cics.student.edu" type="email"/></td>
+<td class="px-6 py-4"><button class="opacity-0 group-hover:opacity-100 material-symbols-outlined text-slate-600 hover:text-red-400 text-[18px]">close</button></td>
+</tr>
+<!-- Row 2 -->
+<tr class="group">
+<td class="px-6 py-4 text-xs text-slate-500">02</td>
+<td class="px-6 py-4"><input class="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none w-full text-sm py-1" placeholder="2024-XXXX" type="text"/></td>
+<td class="px-6 py-4"><input class="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none w-full text-sm py-1" placeholder="First M. Last" type="text"/></td>
+<td class="px-6 py-4"><input class="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none w-full text-sm py-1" placeholder="user@cics.student.edu" type="email"/></td>
+<td class="px-6 py-4"><button class="opacity-0 group-hover:opacity-100 material-symbols-outlined text-slate-600 hover:text-red-400 text-[18px]">close</button></td>
+</tr>
+<!-- Row 3 -->
+<tr class="group">
+<td class="px-6 py-4 text-xs text-slate-500">03</td>
+<td class="px-6 py-4"><input class="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none w-full text-sm py-1" placeholder="2024-XXXX" type="text"/></td>
+<td class="px-6 py-4"><input class="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none w-full text-sm py-1" placeholder="First M. Last" type="text"/></td>
+<td class="px-6 py-4"><input class="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none w-full text-sm py-1" placeholder="user@cics.student.edu" type="email"/></td>
+<td class="px-6 py-4"><button class="opacity-0 group-hover:opacity-100 material-symbols-outlined text-slate-600 hover:text-red-400 text-[18px]">close</button></td>
+</tr>
+<!-- Row 4 -->
+<tr class="group">
+<td class="px-6 py-4 text-xs text-slate-500">04</td>
+<td class="px-6 py-4"><input class="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none w-full text-sm py-1" placeholder="2024-XXXX" type="text"/></td>
+<td class="px-6 py-4"><input class="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none w-full text-sm py-1" placeholder="First M. Last" type="text"/></td>
+<td class="px-6 py-4"><input class="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none w-full text-sm py-1" placeholder="user@cics.student.edu" type="email"/></td>
+<td class="px-6 py-4"><button class="opacity-0 group-hover:opacity-100 material-symbols-outlined text-slate-600 hover:text-red-400 text-[18px]">close</button></td>
+</tr>
+<!-- Row 5 -->
+<tr class="group border-b-0">
+<td class="px-6 py-4 text-xs text-slate-500">05</td>
+<td class="px-6 py-4"><input class="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none w-full text-sm py-1" placeholder="2024-XXXX" type="text"/></td>
+<td class="px-6 py-4"><input class="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none w-full text-sm py-1" placeholder="First M. Last" type="text"/></td>
+<td class="px-6 py-4"><input class="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none w-full text-sm py-1" placeholder="user@cics.student.edu" type="email"/></td>
+<td class="px-6 py-4"><button class="opacity-0 group-hover:opacity-100 material-symbols-outlined text-slate-600 hover:text-red-400 text-[18px]">close</button></td>
+</tr>
+</tbody>
+</table>
+<div class="p-4 bg-indigo-500/5">
+<button class="flex items-center gap-2 text-indigo-400 text-sm font-label-md hover:text-indigo-300 transition-colors mx-auto">
+<span class="material-symbols-outlined">add_circle</span>
+                                        Add New Row
+                                    </button>
+</div>
+</div>
+<div class="flex justify-end pt-4">
+<button class="group relative px-12 py-4 bg-primary text-on-primary font-label-md rounded-xl overflow-hidden shadow-[0_0_40px_rgba(192,193,255,0.2)] transition-all hover:scale-[1.02] active:scale-95">
+<div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="relative flex items-center gap-2">
+                                        Confirm Enrollment
+                                        <span class="material-symbols-outlined">rocket_launch</span>
+</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Navigation Shell -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-slate-950/90 backdrop-blur-xl border-t border-indigo-500/20 z-50 flex items-center justify-around px-2">
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-label-sm">Dashboard</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="text-[10px] font-label-sm">Map</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-indigo-400">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
+<span class="text-[10px] font-label-sm font-bold">Admin</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">school</span>
+<span class="text-[10px] font-label-sm">Faculty</span>
+</button>
+</nav>
+<!-- Contextual FAB (Only for Bulk Upload logic) -->
+<div class="fixed bottom-24 right-8 z-50 md:bottom-8">
+<button class="w-14 h-14 bg-indigo-500 rounded-2xl shadow-2xl shadow-indigo-500/40 flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-2xl">upload_file</span>
+</button>
+</div>
+</body></html>

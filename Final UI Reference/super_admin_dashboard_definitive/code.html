@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CICS Curriculum Map | Super Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(23, 31, 51, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(192, 193, 255, 0.1);
+        }
+        .inner-glow {
+            box-shadow: inset 0 1px 1px rgba(192, 193, 255, 0.1);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ffb4ab",
+                        "on-secondary-fixed": "#001e2f",
+                        "background": "#0b1326",
+                        "surface-variant": "#2d3449",
+                        "surface-tint": "#c0c1ff",
+                        "on-background": "#dae2fd",
+                        "primary-fixed": "#e1e0ff",
+                        "outline": "#908fa0",
+                        "on-surface": "#dae2fd",
+                        "surface-container-low": "#131b2e",
+                        "surface-container-highest": "#2d3449",
+                        "secondary": "#89ceff",
+                        "error-container": "#93000a",
+                        "surface-dim": "#0b1326",
+                        "on-tertiary-fixed": "#29074a",
+                        "primary-container": "#8083ff",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "on-primary-fixed": "#07006c",
+                        "surface-container": "#171f33",
+                        "on-tertiary-container": "#381959",
+                        "inverse-on-surface": "#283044",
+                        "surface-container-high": "#222a3d",
+                        "tertiary-container": "#a482c8",
+                        "on-secondary-container": "#00344e",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "on-primary-container": "#0d0096",
+                        "tertiary": "#dbb8ff",
+                        "secondary-fixed-dim": "#89ceff",
+                        "primary": "#c0c1ff",
+                        "surface-container-lowest": "#060e20",
+                        "outline-variant": "#464554",
+                        "on-secondary": "#00344d",
+                        "on-tertiary-fixed-variant": "#573878",
+                        "surface": "#0b1326",
+                        "secondary-container": "#00a2e6",
+                        "on-tertiary": "#3f2160",
+                        "inverse-surface": "#dae2fd",
+                        "tertiary-fixed-dim": "#dbb8ff",
+                        "secondary-fixed": "#c9e6ff",
+                        "on-error": "#690005",
+                        "tertiary-fixed": "#efdbff",
+                        "on-surface-variant": "#c7c4d7",
+                        "surface-bright": "#31394d",
+                        "on-secondary-fixed-variant": "#004c6e",
+                        "inverse-primary": "#494bd6",
+                        "on-primary": "#1000a9"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Space Grotesk"],
+                        "headline-xl": ["Space Grotesk"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Manrope"],
+                        "label-md": ["Manrope"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Space Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "headline-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full flex flex-col py-6 bg-slate-950/90 backdrop-blur-lg border-r border-white/5 shadow-2xl w-72 z-50">
+<div class="px-8 mb-10 flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-indigo-500 to-cyan-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="account_balance">account_balance</span>
+</div>
+<div>
+<h1 class="text-white font-black text-xl font-headline-md tracking-tight">Super Admin</h1>
+<p class="text-slate-400 text-xs font-label-md">Global Access</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-slate-400 px-6 py-4 flex items-center gap-3 hover:bg-white/5 hover:text-slate-200 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-headline-md text-sm font-medium">Command Center</span>
+</a>
+<a class="text-slate-400 px-6 py-4 flex items-center gap-3 hover:bg-white/5 hover:text-slate-200 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+<span class="font-headline-md text-sm font-medium">Curriculum Matrix</span>
+</a>
+<a class="text-indigo-400 bg-indigo-500/10 border-r-4 border-indigo-500 px-6 py-4 flex items-center gap-3 active:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="group_add">group_add</span>
+<span class="font-headline-md text-sm font-medium">User Directory</span>
+</a>
+<a class="text-slate-400 px-6 py-4 flex items-center gap-3 hover:bg-white/5 hover:text-slate-200 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="manage_accounts">manage_accounts</span>
+<span class="font-headline-md text-sm font-medium">Faculty Roles</span>
+</a>
+<a class="text-slate-400 px-6 py-4 flex items-center gap-3 hover:bg-white/5 hover:text-slate-200 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+<span class="font-headline-md text-sm font-medium">Resource Audit</span>
+</a>
+<a class="text-slate-400 px-6 py-4 flex items-center gap-3 hover:bg-white/5 hover:text-slate-200 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="admin_panel_settings">admin_panel_settings</span>
+<span class="font-headline-md text-sm font-medium">Security Settings</span>
+</a>
+</nav>
+<div class="px-6 pt-6 border-t border-white/5">
+<button class="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 text-white font-label-md py-3 rounded-xl shadow-lg shadow-indigo-500/20 active:scale-95 transition-all">
+                Generate Report
+            </button>
+<div class="mt-6 space-y-1">
+<a class="text-slate-400 px-4 py-3 flex items-center gap-3 hover:text-slate-100 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="contact_support">contact_support</span>
+<span class="text-sm">Support</span>
+</a>
+<a class="text-error px-4 py-3 flex items-center gap-3 hover:bg-error/10 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="text-sm">Sign Out</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-72 flex-1 min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="flex items-center justify-between px-8 h-16 w-full sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-indigo-500/5">
+<div class="flex items-center gap-8">
+<span class="text-lg font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent font-headline-lg">CICS Curriculum Map</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-slate-400 hover:text-slate-100 text-sm font-['Space_Grotesk'] tracking-wide transition-all" href="#">Analytics</a>
+<a class="text-slate-400 hover:text-slate-100 text-sm font-['Space_Grotesk'] tracking-wide transition-all" href="#">Institutions</a>
+<a class="text-slate-400 hover:text-slate-100 text-sm font-['Space_Grotesk'] tracking-wide transition-all" href="#">Logs</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative w-64 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">search</span>
+<input class="w-full bg-white/5 border border-white/10 rounded-full pl-10 pr-4 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 placeholder:text-slate-600" placeholder="Global search..." type="text"/>
+</div>
+<div class="flex gap-4 text-slate-400">
+<button class="hover:bg-white/5 p-2 rounded-md transition-all active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="hover:bg-white/5 p-2 rounded-md transition-all active:scale-95">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+</div>
+<div class="flex items-center gap-3 pl-4 border-l border-white/10">
+<img alt="Super Admin Avatar" class="w-8 h-8 rounded-full border border-indigo-500/50" data-alt="close up professional portrait of a tech administrator with clean studio lighting and digital background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBu7nnLsns5HIvLEsU52urXJlTjUWWwPjVy957ZUcRUOKXScgDNSCFggiPslzM35t25SKJC3asDP0Gggcb2VDwfDL4OhzUYnPHbAuALBZu9K6mIHJf0iCiWaNo_2BIwwCDoNwCr9RVo1zXFYTysWB3nptFZW7r3xO5OhLxYeD8dbKZ-cFZngxMmNoVeVg4MJZ8auy50Rzb_YoMjakEfWxLpdW3l_snw-JzPG9QXp644wvs7DCI8M_xEWbSkwzgXdEhirijGpYFiHF0"/>
+<div class="hidden lg:block text-right">
+<p class="text-xs font-bold text-white leading-none">Alex Rivera</p>
+<p class="text-[10px] text-indigo-400">Institutional Email Verified</p>
+</div>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<div class="p-8 space-y-8 max-w-[1280px] mx-auto w-full">
+<!-- Dashboard Header & Tabs -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h2 class="font-headline-xl text-headline-xl text-white">Super Admin Command</h2>
+<p class="text-on-surface-variant font-body-lg">Enterprise-grade management of CICS users, roles, and institutional security.</p>
+</div>
+<div class="flex bg-surface-container-low rounded-xl p-1 border border-outline-variant">
+<button class="px-4 py-2 text-sm font-label-md bg-primary-container text-on-primary-container rounded-lg shadow-lg">Admin Controls</button>
+<button class="px-4 py-2 text-sm font-label-md text-on-surface-variant hover:text-white transition-colors">User Directory</button>
+<button class="px-4 py-2 text-sm font-label-md text-on-surface-variant hover:text-white transition-colors">Bulk Enrollment</button>
+<button class="px-4 py-2 text-sm font-label-md text-on-surface-variant hover:text-white transition-colors">Platform Security</button>
+</div>
+</div>
+<!-- Security Constraint Warning (Policy Cue) -->
+<div class="glass-card rounded-2xl p-6 flex items-start gap-4 border-l-4 border-l-indigo-500 bg-indigo-500/5 shadow-2xl">
+<span class="material-symbols-outlined text-indigo-400 text-3xl" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<div>
+<h3 class="text-white font-headline-md text-lg">Strict Security Enforcement Active</h3>
+<p class="text-slate-400 text-sm mt-1 max-w-3xl">
+                        Super Admin records can only be managed by users authenticated with a verified <strong>institutional email domain</strong>. Direct peer-to-peer deletion of Super Admin roles is prohibited unless this identity condition is met at the root level.
+                    </p>
+</div>
+</div>
+<!-- Main Content Bento Grid -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Admin Role Management -->
+<section class="col-span-12 lg:col-span-8 space-y-6">
+<div class="glass-card rounded-2xl overflow-hidden flex flex-col">
+<div class="p-6 border-b border-white/5 flex items-center justify-between">
+<h3 class="font-headline-md text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-indigo-400" data-icon="shield_person">shield_person</span>
+                                Active Admin Roles
+                            </h3>
+<button class="text-primary text-sm font-label-md hover:underline flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span> Create New Role
+                            </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-white/5 text-xs font-label-md text-slate-500 uppercase tracking-widest">
+<tr>
+<th class="px-6 py-4">Role Title</th>
+<th class="px-6 py-4">Scope</th>
+<th class="px-6 py-4">Users</th>
+<th class="px-6 py-4 text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<span class="text-white font-medium block">Institutional Registrar</span>
+<span class="text-slate-500 text-xs">Full Curriculum Control</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-indigo-500/20 text-indigo-300 rounded-full text-[10px] font-bold">Global</span>
+</td>
+<td class="px-6 py-4 text-slate-400 text-sm">12</td>
+<td class="px-6 py-4 text-right space-x-2">
+<button class="p-2 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-all"><span class="material-symbols-outlined text-sm" data-icon="edit">edit</span></button>
+<button class="p-2 hover:bg-error/10 rounded-lg text-error/50 hover:text-error transition-all"><span class="material-symbols-outlined text-sm" data-icon="delete">delete</span></button>
+</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<span class="text-white font-medium block">Department Head</span>
+<span class="text-slate-500 text-xs">Matrix &amp; Resource Audit</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-full text-[10px] font-bold">Scoped</span>
+</td>
+<td class="px-6 py-4 text-slate-400 text-sm">45</td>
+<td class="px-6 py-4 text-right space-x-2">
+<button class="p-2 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-all"><span class="material-symbols-outlined text-sm" data-icon="edit">edit</span></button>
+<button class="p-2 hover:bg-error/10 rounded-lg text-error/50 hover:text-error transition-all"><span class="material-symbols-outlined text-sm" data-icon="delete">delete</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Pre-assignment Section -->
+<div class="glass-card rounded-2xl p-6 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-3xl rounded-full"></div>
+<h3 class="font-headline-md text-white flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-cyan-400" data-icon="forward_to_inbox">forward_to_inbox</span>
+                            Instant Access Pre-assignment
+                        </h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="space-y-2">
+<label class="text-xs font-label-md text-slate-400 uppercase tracking-widest">Email Address</label>
+<input class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:ring-indigo-500/50" placeholder="dean@university.edu" type="email"/>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-label-md text-slate-400 uppercase tracking-widest">Role Template</label>
+<select class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:ring-indigo-500/50 text-slate-300">
+<option>Faculty Member</option>
+<option>Department Admin</option>
+<option>Curriculum Auditor</option>
+</select>
+</div>
+<div class="flex items-end">
+<button class="w-full bg-surface-container-highest hover:bg-surface-bright text-white font-label-md py-3 rounded-xl transition-all border border-white/5 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="person_add">person_add</span>
+                                    Authorize Entry
+                                </button>
+</div>
+</div>
+<p class="mt-4 text-xs text-slate-500 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="info">info</span>
+                            Assigned users will receive an invitation link and bypass the standard approval queue.
+                        </p>
+</div>
+</section>
+<!-- Super Admin Management Side Column -->
+<aside class="col-span-12 lg:col-span-4 space-y-6">
+<!-- Super Admin List -->
+<div class="glass-card rounded-2xl p-6">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-white font-headline-md text-lg">Super Admins</h3>
+<button class="bg-indigo-500 hover:bg-indigo-400 text-white p-2 rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="group_add">group_add</span>
+</button>
+</div>
+<div class="space-y-4">
+<!-- Super Admin Item -->
+<div class="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5 group">
+<img class="w-10 h-10 rounded-lg object-cover" data-alt="headshot of a mature tech executive with glasses and a friendly expression, soft office lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuwddxHC0nWQZSIv87DzslASWBuR6I9jNLuAH2zpYhKcQY49vxH_-G89s_lKuozArRV0lJZPQ6RnJZpIaJ91eEyP_5bBQU5YNONuT1GNweEmHcRNKvvLcbzBIiX_99lPd8gDlBal0y4IQfjb6MC8mOwr095GaT01SZ9vdtu1LIeGn66s8DFsrNGhayY_SgFwDjA1qz-POLCDMGvKUULmm-Eg5EYcIyJYXirRx85Sc-d8af_mdehf9RJcWPMBj9n7au1KsLBIKsQNI"/>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-white truncate">Dr. Sarah Chen</p>
+<p class="text-[10px] text-slate-500 truncate">sarah.chen@cics.edu</p>
+</div>
+<span class="material-symbols-outlined text-indigo-400 text-sm opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" data-icon="lock_open">lock_open</span>
+</div>
+<!-- Super Admin Item -->
+<div class="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5 group">
+<img class="w-10 h-10 rounded-lg object-cover" data-alt="portrait of a middle aged man in a professional setting, serious demeanor, natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBt0sYJdSBP_BFEAAkF5G-xYi2txSDiyahuMdsnJsLJP1YeKrYg1Etx25pAt3OPSfronFh7qKfQ9UJgGLweOS8AI39FpegzW4M4Ran2l3hVkQjj2gSNPeapTh4JT1Ut23mmkCQODqIrEEic5oUQOfFuIWYXrUryH5wHdjdaJbyqan_MQKUKv741CSJeGaTjbhdLIYFCg0ut6gqBIyVBgVOktEPRvEwJJp6BZ1IcQDcsOuTkts_d5Elj0XRt998N3Vsrz5NOuAuZ_cw"/>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-white truncate">Marcus Thorne</p>
+<p class="text-[10px] text-slate-500 truncate">m.thorne@cics.edu</p>
+</div>
+<span class="material-symbols-outlined text-indigo-400 text-sm opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" data-icon="lock_open">lock_open</span>
+</div>
+</div>
+</div>
+<!-- Platform Health Metrics (Orbital Motif) -->
+<div class="glass-card rounded-2xl p-6 text-center space-y-6 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-b from-indigo-500/10 to-transparent"></div>
+<h4 class="text-white font-label-md uppercase tracking-[0.2em] text-xs">Security Integrity</h4>
+<div class="relative w-40 h-40 mx-auto">
+<!-- Circular Progress -->
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-white/5" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-indigo-500" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" stroke-dasharray="440" stroke-dashoffset="44" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-3xl font-black text-white">94%</span>
+<span class="text-[10px] text-slate-500 font-bold uppercase">Safe</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-3 bg-white/5 rounded-xl border border-white/5">
+<span class="text-[10px] text-slate-500 block">Total Roles</span>
+<span class="text-lg font-bold text-cyan-400">24</span>
+</div>
+<div class="p-3 bg-white/5 rounded-xl border border-white/5">
+<span class="text-[10px] text-slate-500 block">Pending</span>
+<span class="text-lg font-bold text-indigo-400">102</span>
+</div>
+</div>
+</div>
+<!-- Recent Security Logs -->
+<div class="space-y-3">
+<h4 class="text-slate-500 font-label-md text-xs px-2">RECENT AUDIT LOG</h4>
+<div class="text-[11px] space-y-3 px-2">
+<div class="flex items-start gap-3">
+<div class="w-1.5 h-1.5 mt-1 rounded-full bg-cyan-400"></div>
+<p class="text-slate-300">Admin <span class="text-white font-bold">Alex Rivera</span> pre-assigned role "Dept Head" to j.smith@cics.edu</p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-1.5 h-1.5 mt-1 rounded-full bg-indigo-500"></div>
+<p class="text-slate-300">Institutional policy updated for <span class="text-white font-bold">Domain Restrictions</span></p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-1.5 h-1.5 mt-1 rounded-full bg-error"></div>
+<p class="text-slate-300">Unauthorized attempt to edit <span class="text-white font-bold">Super Admin</span> from external IP</p>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div>
+<!-- Footer -->
+<footer class="mt-auto p-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-slate-500 text-xs">
+<p>© 2024 CICS University Global Curriculum Matrix. All rights reserved.</p>
+<div class="flex gap-6 mt-4 md:mt-0">
+<a class="hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-white transition-colors" href="#">System Status</a>
+<a class="hover:text-white transition-colors" href="#">Security Audit</a>
+</div>
+</footer>
+</main>
+</body></html>
