@@ -18,6 +18,7 @@ Every major team decision is recorded here (as required in guideline Part 2.4).
 | 9 | 04/09/2026 | Project scaffold completed and approved | Basic React/Next.js + Supabase setup vs other frameworks | All members (PM + Developer) | Scaffold is now complete and approved. Developer can immediately start Sprint 1 stories. This marks the official start of Build Sprint 1. |
 |10 | 04/09/2026 | QA & Docs Lead completed CONTRIBUTING.md and CHANGELOG.md | Ad-hoc documentation vs structured guideline-compliant docs | All members | CONTRIBUTING.md and CHANGELOG.md are now in place as required by the guideline. |
 | 11 | 04/15/2026 | Start of Build Sprint 1 (Authentication & Log-in Flow) | Continuing with previous plan vs re-scoping | All members | Officially started Sprint 1. Developer has begun implementing core auth features. |
+| 12 | 04/22/2026 | Major design pivot to new CICS Curriculum Map Specification | NEUVLE-inspired design vs Detailed professor specification | All members | Decided to fully adopt the new detailed specification document provided by the professor. All Sprint 1 work must now follow the new requirements (Google Login restriction, prerequisite logic, role-specific views, bulk enrollment, etc.). |
 
 **Next major decisions to be logged (already in To Do):**  
 - Final frontend framework confirmation  
