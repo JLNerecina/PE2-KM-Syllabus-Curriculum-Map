@@ -53,5 +53,5 @@
 - Sprint 1: Authentication & Log-in Flow
 - Sprint 2: Core Functionalities
 
-**Standup note filed by:** Project Manager  
+**Standup note filed by:** Scrum Master  
 **Next standup:** March 31, 2026
