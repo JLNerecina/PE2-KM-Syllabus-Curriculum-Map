@@ -166,10 +166,13 @@ export default function AuditTrailTab() {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       list = list.filter(l =>
-        (l.actor_name || '').toLowerCase().includes(q) ||
+        (l.actor_name || 'System').toLowerCase().includes(q) ||
         (l.actor_email || '').toLowerCase().includes(q) ||
+        (l.actor_role || '').toLowerCase().includes(q) ||
         (l.target_label || '').toLowerCase().includes(q) ||
+        (l.target_id || '').toLowerCase().includes(q) ||
         l.action.toLowerCase().includes(q) ||
+        getActionMeta(l.action).label.toLowerCase().includes(q) ||
         buildSummary(l).toLowerCase().includes(q)
       );
     }
@@ -300,7 +303,7 @@ export default function AuditTrailTab() {
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
             <input
               type="search"
-              placeholder="Search by actor, target, or action..."
+              placeholder="Search actor, action, target, or summary..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               className="w-full bg-surface-variant/30 border border-indigo-500/20 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-200 outline-none focus:border-indigo-500 transition-colors placeholder:text-slate-500"
