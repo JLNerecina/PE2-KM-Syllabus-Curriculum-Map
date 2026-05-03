@@ -4,22 +4,31 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 
 export default function Login() {
-  const { user } = useAuth();
+  const { user, profile, isLoading: isAuthLoading, authError, clearAuthError } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Auto-clear error message after 5 seconds
+  // Sync global auth errors to local state
+  useEffect(() => {
+    if (authError) {
+      setError(authError);
+      clearAuthError();
+    }
+  }, [authError, clearAuthError]);
+
+  // Auto-clear error message after 10 seconds
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => {
         setError(null);
-      }, 5000);
+      }, 10000);
       return () => clearTimeout(timer);
     }
   }, [error]);
 
-  // If user is already logged in, redirect to home
-  if (user) {
+  // If user is logged in AND has a profile, redirect to home
+  // If they have a user but no profile yet, we wait for AuthContext to finish verification
+  if (user && profile) {
     return <Navigate to="/" replace />;
   }
 
@@ -118,10 +127,10 @@ export default function Login() {
             <div className="w-full space-y-stack-md">
               <button 
                 onClick={handleGoogleLogin}
-                disabled={isLoading}
+                disabled={isLoading || (user && !profile && isAuthLoading)}
                 className="w-full flex items-center justify-center gap-4 bg-gradient-to-r from-primary-container to-secondary-container text-white font-label-md text-label-md py-4 px-6 rounded-xl hover:shadow-[0_0_20px_rgba(128,131,255,0.4)] hover:brightness-110 transition-all duration-300 group/btn active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                {isLoading ? (
+                {isLoading || (user && !profile && isAuthLoading) ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                 ) : (
                   <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
@@ -131,7 +140,11 @@ export default function Login() {
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="currentColor" />
                   </svg>
                 )}
-                {isLoading ? 'Opening popup...' : 'Sign in with Google'}
+                {isLoading 
+                  ? 'Opening popup...' 
+                  : (user && !profile && isAuthLoading) 
+                    ? 'Verifying authorization...' 
+                    : 'Sign in with Google'}
               </button>
             </div>
           </div>
