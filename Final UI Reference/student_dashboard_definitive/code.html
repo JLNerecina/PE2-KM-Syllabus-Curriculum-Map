@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CICS Curriculum Map - Student Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b1326;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d3449;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #464554;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-container": "#8083ff",
+                      "inverse-surface": "#dae2fd",
+                      "outline": "#908fa0",
+                      "on-secondary-container": "#00344e",
+                      "surface-container": "#171f33",
+                      "inverse-on-surface": "#283044",
+                      "error-container": "#93000a",
+                      "primary": "#c0c1ff",
+                      "secondary-fixed-dim": "#89ceff",
+                      "on-primary-fixed": "#07006c",
+                      "on-tertiary": "#3f2160",
+                      "on-tertiary-fixed": "#29074a",
+                      "on-error-container": "#ffdad6",
+                      "tertiary-fixed": "#efdbff",
+                      "on-surface-variant": "#c7c4d7",
+                      "tertiary": "#dbb8ff",
+                      "surface-bright": "#31394d",
+                      "on-surface": "#dae2fd",
+                      "outline-variant": "#464554",
+                      "primary-fixed-dim": "#c0c1ff",
+                      "on-primary-container": "#0d0096",
+                      "secondary": "#89ceff",
+                      "on-primary": "#1000a9",
+                      "error": "#ffb4ab",
+                      "surface-variant": "#2d3449",
+                      "secondary-fixed": "#c9e6ff",
+                      "surface-container-high": "#222a3d",
+                      "on-tertiary-container": "#381959",
+                      "on-secondary": "#00344d",
+                      "surface-dim": "#0b1326",
+                      "on-secondary-fixed": "#001e2f",
+                      "on-primary-fixed-variant": "#2f2ebe",
+                      "surface-tint": "#c0c1ff",
+                      "surface-container-lowest": "#060e20",
+                      "primary-fixed": "#e1e0ff",
+                      "on-tertiary-fixed-variant": "#573878",
+                      "surface-container-highest": "#2d3449",
+                      "inverse-primary": "#494bd6",
+                      "tertiary-fixed-dim": "#dbb8ff",
+                      "on-background": "#dae2fd",
+                      "surface-container-low": "#131b2e",
+                      "on-secondary-fixed-variant": "#004c6e",
+                      "tertiary-container": "#a482c8",
+                      "surface": "#0b1326",
+                      "on-error": "#690005",
+                      "background": "#0b1326",
+                      "secondary-container": "#00a2e6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-lg": "48px",
+                      "stack-md": "24px",
+                      "section-padding": "80px",
+                      "stack-sm": "8px",
+                      "margin-mobile": "16px",
+                      "gutter": "24px",
+                      "container-max": "1280px",
+                      "unit": "4px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Space Grotesk"],
+                      "headline-md": ["Space Grotesk"],
+                      "headline-xl": ["Space Grotesk"],
+                      "body-md": ["Inter"],
+                      "label-md": ["Manrope"],
+                      "body-lg": ["Inter"],
+                      "label-sm": ["Manrope"]
+              },
+              "fontSize": {
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                      "headline-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary/30">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/80 backdrop-blur-lg border-b border-indigo-500/20 shadow-lg shadow-indigo-500/5">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold bg-gradient-to-r from-indigo-500 to-cyan-400 bg-clip-text text-transparent font-headline-lg">CICS Curriculum Map</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden md:flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-slate-400" data-icon="search">search</span>
+<input class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-1.5 text-sm w-64 focus:ring-1 focus:ring-indigo-500" placeholder="Search courses..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-indigo-500/10 transition-colors duration-200 text-slate-400">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-indigo-500/10 transition-colors duration-200 text-slate-400">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-indigo-500/30">
+<img alt="User Profile Avatar" data-alt="close-up portrait of a student avatar with subtle cosmic lighting effects on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCke_j5Jv2F5BEwUPfh_JQBx9l-9SGkdEeUkxid89dPhfsTFXiSXm8mU78Asn3o9VFgmcnesksYF6__RFEZcUx1qnILtIatbJ6f74mUWeiGSkCmVMCTrCLxDBbJgYKqr0MD4atVPqJLiaMdEuxhp_IxT7Jg7DzLOyYYzE1i0_x3PaxwmQ7alH3aoG3kfEM4yNXK1CAjWrsyfFNT5TjvSm_ZyN9E2MzlC5Wv6on3R6drTjlGOAUUtadHeJDaeeC1yE4TI1LJ1PMYSUw"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-slate-950/90 backdrop-blur-xl border-r border-indigo-500/10 shadow-2xl shadow-black flex flex-col py-6 gap-2">
+<div class="px-6 mb-8">
+<h2 class="font-bold text-indigo-400 font-headline-md">CICS Curriculum</h2>
+<p class="text-slate-500 text-xs font-label-sm uppercase tracking-widest">Academic Portal</p>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 text-slate-500 hover:text-slate-200 px-4 py-3 hover:bg-indigo-500/5 transition-all duration-300 rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="dashboard">dashboard</span>
+<span class="font-space-grotesk text-sm tracking-wide">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 bg-indigo-500/15 text-indigo-400 border-r-2 border-indigo-500 rounded-r-lg px-4 py-3 font-bold transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+<span class="font-space-grotesk text-sm tracking-wide">Curriculum</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 hover:text-slate-200 px-4 py-3 hover:bg-indigo-500/5 transition-all duration-300 rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="school">school</span>
+<span class="font-space-grotesk text-sm tracking-wide">Faculty</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 hover:text-slate-200 px-4 py-3 hover:bg-indigo-500/5 transition-all duration-300 rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="admin_panel_settings">admin_panel_settings</span>
+<span class="font-space-grotesk text-sm tracking-wide">Admin Panel</span>
+</a>
+</nav>
+<div class="px-4 mt-auto">
+<a class="flex items-center gap-3 text-slate-500 hover:text-error px-4 py-3 hover:bg-error/5 transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-space-grotesk text-sm tracking-wide">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-64 flex-1 p-8 bg-surface-dim min-h-screen">
+<div class="max-w-container-max mx-auto">
+<!-- Welcome & Instructional Header -->
+<section class="mb-12">
+<div class="bg-indigo-500/5 border border-indigo-500/20 rounded-2xl p-8 backdrop-blur-sm relative overflow-hidden">
+<div class="absolute -right-20 -top-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<h1 class="font-headline-xl text-on-surface mb-2">My Academic Journey</h1>
+<p class="text-body-lg text-on-surface-variant max-w-2xl">Check all the courses that you have already taken to unlock your path and visualize your progress through the CICS curriculum.</p>
+<div class="mt-6 flex gap-4">
+<button class="bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-label-md px-6 py-3 rounded-full shadow-lg shadow-indigo-500/20 hover:scale-105 transition-transform">
+                                    Save Progress
+                                </button>
+<button class="border border-indigo-500/30 text-indigo-400 font-label-md px-6 py-3 rounded-full hover:bg-indigo-500/10 transition-colors">
+                                    Download Map (PDF)
+                                </button>
+</div>
+</div>
+</div>
+</section>
+<!-- 4-Year Grid -->
+<div class="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-4 gap-8">
+<!-- YEAR 1 -->
+<div class="space-y-6">
+<h3 class="font-headline-md text-indigo-300 border-b border-indigo-500/20 pb-2">Freshman Year</h3>
+<!-- Semester 1 -->
+<div class="bg-surface-container-low rounded-xl p-5 border border-outline-variant/30">
+<div class="flex justify-between items-center mb-4">
+<h4 class="font-label-md text-on-surface">Fall Semester</h4>
+<label class="flex items-center gap-2 cursor-pointer group">
+<span class="text-[10px] text-slate-500 uppercase tracking-tighter group-hover:text-indigo-400">Select All</span>
+<input class="rounded border-outline-variant bg-surface text-indigo-500 focus:ring-indigo-500" type="checkbox"/>
+</label>
+</div>
+<div class="space-y-3">
+<!-- Course Card: Completed -->
+<div class="p-3 bg-surface-container rounded-lg border border-indigo-500/40 flex items-start gap-3 hover:bg-indigo-500/5 transition-colors cursor-pointer group">
+<input checked="" class="mt-1 rounded border-indigo-500 bg-surface text-indigo-500" type="checkbox"/>
+<div class="flex-1">
+<div class="flex justify-between">
+<span class="text-xs font-bold text-indigo-400">CICS 101</span>
+<span class="material-symbols-outlined text-xs text-indigo-400" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<p class="text-sm font-medium">Intro to Computing</p>
+</div>
+</div>
+<!-- Course Card: Completed -->
+<div class="p-3 bg-surface-container rounded-lg border border-indigo-500/40 flex items-start gap-3 hover:bg-indigo-500/5 transition-colors cursor-pointer group">
+<input checked="" class="mt-1 rounded border-indigo-500 bg-surface text-indigo-500" type="checkbox"/>
+<div class="flex-1">
+<div class="flex justify-between">
+<span class="text-xs font-bold text-indigo-400">MATH 131</span>
+<span class="material-symbols-outlined text-xs text-indigo-400" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<p class="text-sm font-medium">Calculus I</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Semester 2 -->
+<div class="bg-surface-container-low rounded-xl p-5 border border-outline-variant/30">
+<div class="flex justify-between items-center mb-4">
+<h4 class="font-label-md text-on-surface">Spring Semester</h4>
+<input class="rounded border-outline-variant bg-surface text-indigo-500 focus:ring-indigo-500" type="checkbox"/>
+</div>
+<div class="space-y-3">
+<div class="p-3 bg-surface-container rounded-lg border border-outline-variant/20 flex items-start gap-3 hover:bg-indigo-500/5 transition-colors cursor-pointer group">
+<input class="mt-1 rounded border-outline-variant bg-surface text-indigo-500" type="checkbox"/>
+<div class="flex-1">
+<span class="text-xs font-bold text-slate-400">CICS 102</span>
+<p class="text-sm font-medium">Data Structures</p>
+</div>
+</div>
+<div class="p-3 bg-surface-container rounded-lg border border-outline-variant/20 flex items-start gap-3 hover:bg-indigo-500/5 transition-colors cursor-pointer group">
+<input class="mt-1 rounded border-outline-variant bg-surface text-indigo-500" type="checkbox"/>
+<div class="flex-1">
+<span class="text-xs font-bold text-slate-400">MATH 132</span>
+<p class="text-sm font-medium">Calculus II</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- YEAR 2 -->
+<div class="space-y-6">
+<h3 class="font-headline-md text-indigo-300 border-b border-indigo-500/20 pb-2">Sophomore Year</h3>
+<!-- Semester 3 -->
+<div class="bg-surface-container-low rounded-xl p-5 border border-outline-variant/30">
+<div class="flex justify-between items-center mb-4">
+<h4 class="font-label-md text-on-surface">Fall Semester</h4>
+<input class="rounded border-outline-variant bg-surface text-indigo-500 focus:ring-indigo-500" type="checkbox"/>
+</div>
+<div class="space-y-3">
+<!-- Selected Course -->
+<div class="p-3 bg-indigo-500/10 rounded-lg border-2 border-indigo-500 flex items-start gap-3 cursor-pointer ring-4 ring-indigo-500/10">
+<input class="mt-1 rounded border-indigo-500 bg-surface text-indigo-500" type="checkbox"/>
+<div class="flex-1">
+<div class="flex justify-between">
+<span class="text-xs font-bold text-indigo-400">CICS 210</span>
+<span class="bg-indigo-500 text-white text-[8px] px-1.5 py-0.5 rounded-full uppercase">Viewing</span>
+</div>
+<p class="text-sm font-semibold">Computer Systems</p>
+</div>
+</div>
+<div class="p-3 bg-surface-container rounded-lg border border-outline-variant/20 flex items-start gap-3 hover:bg-indigo-500/5 transition-colors cursor-pointer group">
+<input class="mt-1 rounded border-outline-variant bg-surface text-indigo-500" type="checkbox"/>
+<div class="flex-1">
+<span class="text-xs font-bold text-slate-400">STAT 240</span>
+<p class="text-sm font-medium">Introduction to Statistics</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Semester 4 -->
+<div class="bg-surface-container-low rounded-xl p-5 border border-outline-variant/30">
+<div class="flex justify-between items-center mb-4">
+<h4 class="font-label-md text-on-surface">Spring Semester</h4>
+<input class="rounded border-outline-variant bg-surface text-indigo-500 focus:ring-indigo-500" type="checkbox"/>
+</div>
+<div class="space-y-3">
+<!-- Locked Course -->
+<div class="p-3 bg-surface-container/50 rounded-lg border border-outline-variant/10 flex items-start gap-3 opacity-60 grayscale relative overflow-hidden group">
+<div class="mt-1 flex items-center justify-center w-4 h-4">
+<span class="material-symbols-outlined text-[16px] text-slate-500" data-icon="lock">lock</span>
+</div>
+<div class="flex-1">
+<span class="text-xs font-bold text-slate-500">CICS 250</span>
+<p class="text-sm font-medium">Software Engineering</p>
+<p class="text-[10px] text-error mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]" data-icon="warning">warning</span>
+                                            Req: CICS 210
+                                        </p>
+</div>
+<div class="absolute inset-0 bg-slate-950/20 backdrop-blur-[1px] hidden group-hover:flex items-center justify-center transition-all">
+<span class="text-[10px] font-bold text-white bg-slate-800 px-2 py-1 rounded">PREREQUISITE UNMET</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- YEAR 3 -->
+<div class="space-y-6">
+<h3 class="font-headline-md text-indigo-300 border-b border-indigo-500/20 pb-2">Junior Year</h3>
+<div class="bg-surface-container-low/40 rounded-xl p-10 border border-dashed border-outline-variant/30 flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-4xl text-slate-700 mb-2" data-icon="auto_awesome_motion">auto_awesome_motion</span>
+<p class="text-xs text-slate-600 font-label-md uppercase tracking-widest">Year 3 Focus</p>
+<p class="text-[10px] text-slate-500 mt-2">Complete prerequisites to populate your Junior Year pathway.</p>
+</div>
+</div>
+<!-- YEAR 4 -->
+<div class="space-y-6">
+<h3 class="font-headline-md text-indigo-300 border-b border-indigo-500/20 pb-2">Senior Year</h3>
+<div class="bg-surface-container-low/40 rounded-xl p-10 border border-dashed border-outline-variant/30 flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-4xl text-slate-700 mb-2" data-icon="workspace_premium">workspace_premium</span>
+<p class="text-xs text-slate-600 font-label-md uppercase tracking-widest">Capstone Period</p>
+<p class="text-[10px] text-slate-500 mt-2">Finish CORE courses to unlock Capstone electives.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Interactive Slide-over (Course Details) -->
+<div class="fixed inset-y-0 right-0 w-96 bg-slate-950 shadow-2xl border-l border-indigo-500/20 z-[60] flex flex-col transform transition-transform duration-500">
+<!-- Header -->
+<div class="p-6 border-b border-indigo-500/10 flex items-center justify-between">
+<div>
+<span class="text-indigo-400 text-xs font-bold font-label-sm">COURSE DETAILS</span>
+<h2 class="font-headline-md text-white">CICS 210: Computer Systems</h2>
+</div>
+<button class="p-2 hover:bg-indigo-500/10 rounded-full text-slate-400">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Content -->
+<div class="flex-1 overflow-y-auto p-6 space-y-8">
+<!-- Illustration / Preview Area -->
+<div class="h-32 rounded-xl bg-gradient-to-br from-indigo-900/50 to-cyan-900/50 border border-indigo-500/20 flex items-center justify-center relative overflow-hidden group">
+<div class="absolute inset-0 opacity-20 group-hover:scale-110 transition-transform duration-1000">
+<img alt="Course Abstract" class="w-full h-full object-cover" data-alt="abstract digital network visualization with indigo and cyan neon lines glowing against a dark cosmic background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwjqQhEdMGwyOE8BMOHAExQGNAu_NX_wjIq2to_mMdiVIVgfApF0Ccc3wFP55zhi8GGIjU0H3aHLdONfzfbogmARh6RiK1FPcqERUDLCQ8m14o8ijuH5DcWbmLsVR4--TjNUujhxRyQr5xBPit9vWFnOkIQclAERm2GoByTI2Wr8DegAphyDJK-RxlnpPDfppo6kaNnX_g09yA9Vy-UBCb9-ocaKk3pMP34z5hKqo16cCiPjsFLPjLk4KX-697yFEtWQiLdSbwBSU"/>
+</div>
+<span class="material-symbols-outlined text-4xl text-indigo-300 relative z-10" data-icon="memory">memory</span>
+</div>
+<!-- Prerequisites Section -->
+<section>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-indigo-400 text-sm" data-icon="list_alt">list_alt</span>
+<h3 class="font-label-md text-on-surface uppercase tracking-wider">Required Prerequisites</h3>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-3 rounded-lg bg-surface-container-highest border border-indigo-500/40">
+<span class="material-symbols-outlined text-indigo-400 text-sm" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="text-sm font-medium">CICS 102</p>
+<p class="text-[10px] text-slate-400 italic">Data Structures</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg bg-surface-container-highest border border-indigo-500/40">
+<span class="material-symbols-outlined text-indigo-400 text-sm" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="text-sm font-medium">MATH 132</p>
+<p class="text-[10px] text-slate-400 italic">Calculus II</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Unlocks Section -->
+<section>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-cyan-400 text-sm" data-icon="key">key</span>
+<h3 class="font-label-md text-on-surface uppercase tracking-wider">Unlocks These Courses</h3>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-3 rounded-lg bg-slate-900/50 border border-outline-variant/30 hover:border-cyan-500/50 transition-colors cursor-pointer group">
+<div class="w-8 h-8 rounded bg-cyan-500/10 flex items-center justify-center text-cyan-400">
+<span class="material-symbols-outlined text-sm" data-icon="hub">hub</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium group-hover:text-cyan-400 transition-colors">CICS 250</p>
+<p class="text-[10px] text-slate-500 italic">Software Engineering</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg bg-slate-900/50 border border-outline-variant/30 hover:border-cyan-500/50 transition-colors cursor-pointer group">
+<div class="w-8 h-8 rounded bg-cyan-500/10 flex items-center justify-center text-cyan-400">
+<span class="material-symbols-outlined text-sm" data-icon="terminal">terminal</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium group-hover:text-cyan-400 transition-colors">CICS 377</p>
+<p class="text-[10px] text-slate-500 italic">Operating Systems</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg bg-slate-900/50 border border-outline-variant/30 hover:border-cyan-500/50 transition-colors cursor-pointer group">
+<div class="w-8 h-8 rounded bg-cyan-500/10 flex items-center justify-center text-cyan-400">
+<span class="material-symbols-outlined text-sm" data-icon="shield">shield</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium group-hover:text-cyan-400 transition-colors">CICS 460</p>
+<p class="text-[10px] text-slate-500 italic">Cybersecurity Foundations</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer Action -->
+<div class="p-6 border-t border-indigo-500/10 bg-slate-950/50 backdrop-blur-md">
+<button class="w-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 group">
+                Add to Planning Semester
+                <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Floating Action Button (FAB) - Suppression Logic applied (not visible on details but shown for dashboard flow) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-indigo-500 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40 group">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span class="absolute right-16 bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Add Custom Course</span>
+</button>
+</body></html>
