@@ -54,6 +54,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
       
       const profileData = data as UserProfile;
+      
+      if (profileData.is_deleted) {
+        // User is blocked
+        await supabase.auth.signOut();
+        setAuthError("Your account has been blocked. Please contact the system administration for assistance.");
+        return null;
+      }
+      
       setProfile(profileData);
       profileRef.current = profileData;
       setAuthError(null);
