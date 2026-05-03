@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState, useRef } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import type { UserProfile } from '../types';
@@ -29,6 +29,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
+  const userRef = useRef<User | null>(null);
+  const profileRef = useRef<UserProfile | null>(null);
 
   const clearAuthError = () => setAuthError(null);
 
@@ -53,6 +55,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       const profileData = data as UserProfile;
       setProfile(profileData);
+      profileRef.current = profileData;
       setAuthError(null);
       return profileData;
     } catch (err) {
@@ -103,21 +106,51 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
     window.addEventListener('message', handleMessage);
 
-    // 2. Initial session check
-    const initAuth = async () => {
-      setIsLoading(true);
-      const { data: { session: initialSession } } = await supabase.auth.getSession();
+    // 2. Auth initialization and listeners
+    let mounted = true;
+
+    const handleAuthStateChange = async (event: string, currentSession: Session | null) => {
+      if (!mounted) return;
+
+      const newUser = currentSession?.user ?? null;
+      const isLoggingIn = !userRef.current && newUser;
+      const isLoggingOut = userRef.current && !newUser;
       
-      if (initialSession?.user) {
-        setSession(initialSession);
-        setUser(initialSession.user);
-        await fetchAndSetProfile(initialSession.user.id);
+      userRef.current = newUser;
+
+      if (newUser) {
+        setSession(currentSession);
+        setUser(newUser);
+        
+        // Only trigger global loading state if we are transitioning from NO user
+        // or if it's the very first initialization and we don't have a profile yet.
+        // This prevents the "flash" when switching tabs since the user is already tracked.
+        if (isLoggingIn || (event === 'INITIAL_SESSION' && !profileRef.current)) {
+          setIsLoading(true);
+        }
+        
+        await fetchAndSetProfile(newUser.id);
+      } else {
+        setSession(null);
+        setUser(null);
+        setProfile(null);
+        profileRef.current = null;
+        
+        // If we are logging out, ensure loading is false
+        if (isLoggingOut) {
+          setIsLoading(false);
+        }
       }
       
-      setIsLoading(false);
+      if (mounted) {
+        setIsLoading(false);
+      }
     };
 
-    initAuth();
+    // Initial session check
+    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+      handleAuthStateChange('INITIAL_SESSION', initialSession);
+    });
 
     // Listen for auth changes
     const {
@@ -125,24 +158,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
       // console.log('Auth state change:', event, currentSession?.user?.email);
       
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || (event === 'INITIAL_SESSION' && currentSession)) {
-        if (currentSession?.user) {
-          setSession(currentSession);
-          setUser(currentSession.user);
-          setIsLoading(true);
-          await fetchAndSetProfile(currentSession.user.id);
-          setIsLoading(false);
-        }
-      } else if (event === 'SIGNED_OUT') {
-        setSession(null);
-        setUser(null);
-        setProfile(null);
-        setIsLoading(false);
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
+        handleAuthStateChange(event, currentSession);
       }
-
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
       window.removeEventListener('message', handleMessage);
     };

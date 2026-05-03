@@ -81,6 +81,61 @@ export default function Tracker() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isFinalizeModalOpen, setIsFinalizeModalOpen] = useState(false);
 
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  // Reset initialization when switching students
+  useEffect(() => {
+    setHasInitialized(false);
+  }, [targetUserId]);
+
+  // Handle initial year/sem selection
+  useEffect(() => {
+    if (!targetUserId || hasInitialized) return;
+
+    // 1. Try localStorage first
+    const savedYear = localStorage.getItem(`tracker_year_${targetUserId}`);
+    const savedSem = localStorage.getItem(`tracker_sem_${targetUserId}`);
+
+    if (savedYear && savedSem) {
+      setActiveYear(parseInt(savedYear));
+      setActiveSem(parseInt(savedSem));
+      setHasInitialized(true);
+      return;
+    }
+
+    // 2. Derive from studentTerms if available
+    if (studentTerms.length > 0) {
+      const sortedTerms = [...studentTerms].sort((a, b) => a.year_level - b.year_level || a.semester - b.semester);
+      const current = sortedTerms.find(t => t.status !== 'completed');
+      
+      if (current) {
+        setActiveYear(current.year_level);
+        setActiveSem(current.semester);
+      } else {
+        const last = sortedTerms[sortedTerms.length - 1];
+        if (last.semester < 3) {
+          setActiveYear(last.year_level);
+          setActiveSem(last.semester + 1);
+        } else if (last.year_level < 4) {
+          setActiveYear(last.year_level + 1);
+          setActiveSem(1);
+        }
+      }
+      setHasInitialized(true);
+    } else if (allCourses.length > 0) {
+      // If we have courses but no terms, it means they are at the very beginning (Year 1 Sem 1)
+      setHasInitialized(true);
+    }
+  }, [targetUserId, studentTerms, allCourses, hasInitialized]);
+
+  // Persist year/sem changes to localStorage
+  useEffect(() => {
+    if (targetUserId && hasInitialized) {
+      localStorage.setItem(`tracker_year_${targetUserId}`, activeYear.toString());
+      localStorage.setItem(`tracker_sem_${targetUserId}`, activeSem.toString());
+    }
+  }, [activeYear, activeSem, targetUserId, hasInitialized]);
+
   // Auto-clear warning message after 5 seconds
   useEffect(() => {
     if (warningMessage) {
@@ -243,6 +298,13 @@ export default function Tracker() {
     setActiveYear(targetYear);
     setActiveSem(targetSem);
     setWarningMessage(null);
+    setHasInitialized(true); // Mark as initialized so auto-select doesn't override manual navigation
+    
+    // Explicitly update localStorage when user manually selects
+    if (targetUserId) {
+      localStorage.setItem(`tracker_year_${targetUserId}`, targetYear.toString());
+      localStorage.setItem(`tracker_sem_${targetUserId}`, targetSem.toString());
+    }
   };
 
   const toggleCourseSelection = (courseId: string) => {
@@ -493,12 +555,18 @@ export default function Tracker() {
     // Automatically move to next logical term if possible
     if (activeSem === 1) {
       setActiveSem(2);
+      if (targetUserId) localStorage.setItem(`tracker_sem_${targetUserId}`, '2');
     } else if (activeSem === 2) {
       setActiveSem(3);
+      if (targetUserId) localStorage.setItem(`tracker_sem_${targetUserId}`, '3');
     } else {
       if (activeYear < 4) {
         setActiveYear(activeYear + 1);
         setActiveSem(1);
+        if (targetUserId) {
+          localStorage.setItem(`tracker_year_${targetUserId}`, (activeYear + 1).toString());
+          localStorage.setItem(`tracker_sem_${targetUserId}`, '1');
+        }
       }
     }
   };
