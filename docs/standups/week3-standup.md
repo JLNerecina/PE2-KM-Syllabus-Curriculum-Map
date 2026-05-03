@@ -46,4 +46,4 @@
 
 **Next standup:** Tuesday, April 14 (Week 4)
 
-**Standup note filed by:** Project Manager
+**Standup note filed by:** Scrum Master 
