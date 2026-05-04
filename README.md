@@ -79,7 +79,12 @@ For a detailed log of all member contributions, linked PRs, and commit history, 
 
 ---
 
-## 10. License & Academic Context
+## 10. Screenshots
+![tracker](tracker.png)
+*just a sample*
+![audit trail](audit.png)
+
+## 11. License & Academic Context
 This project is licensed under the **MIT License**.
 > This project is developed as a primary requirement for **PROFESSIONAL ELECTIVE 2 (PE2)** under the **Bachelor of Science in Computer Science (BSCS)** program at **NEW ERA UNIVERSITY**. 
 
