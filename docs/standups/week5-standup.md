@@ -27,21 +27,21 @@
 
 **Full-Stack Developer:**  
 - Completed: Project scaffold.  
-- Working on this week: Begin development of updated Sprint 1 features based on the new CICS Curriculum Map specification (Authentication with @neu.edu.ph restriction, role-based views, etc.).  
+- Working on this week: Begin development of updated Sprint 1 & 2 features based on the new CICS Curriculum Map specification (Authentication with @neu.edu.ph restriction, role-based views, etc.).  
 - Blockers: None.
 
 **QA & Documentation Lead:**  
-- Completed: Initial test cases for Sprint 1 and documentation files.  
+- Completed: Initial test cases for Sprint 1 & 2 and documentation files.  
 - Working on this week: Finalize and update all Test Cases based on the new system specifications.  
 - Blockers: None.
 
 ## Current Status & Notes
-- We are in the middle of Sprint 1 but have made a significant pivot to follow the professor-approved detailed specification.
+- We are in the middle of Sprint 1 & 2 but have made a significant pivot to follow the professor-approved detailed specification.
 - The new specs include strict Google Login (@neu.edu.ph), complex prerequisite checking, role-specific dashboards, bulk enrollment, and soft delete functionality.
 - All members are now realigning their deliverables to the new requirements.
 
 ## To Do / Action Items for This Week
-- Developer: Start implementing updated Sprint 1 features based on new specs.
+- Developer: Start implementing updated Sprint 1 & 2 features based on new specs.
 - UX/UI: Create new/updated wireframes and Stitch UI codes using the prompts from the specification document.
 - KM Analyst: Finalize BPMN Diagram based on updated specs.
 - QA: Update and expand Test Cases to match the new requirements.
