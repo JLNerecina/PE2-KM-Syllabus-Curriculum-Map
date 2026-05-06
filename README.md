@@ -7,6 +7,8 @@
 ## 1. Overview
 The **Syllabus & Curriculum Map** is a specialized Knowledge Management system designed to streamline academic tracking. It enables students to visualize their degree progress, manages course prerequisites, and provides faculty/admins with powerful oversight tools. By transforming static syllabi into an interactive "map," it enhances knowledge retrieval and academic planning.
 
+**Live Demo:** [https://pe-2-km-syllabus-curriculum-map.vercel.app/](https://pe-2-km-syllabus-curriculum-map.vercel.app/)
+
 ## 2. KM Framework
 This project is built upon the **SECI Model** (Socialization, Externalization, Combination, Internalization):
 * **Externalization:** Converting complex curriculum prerequisites into a visual, interactive map.
@@ -54,7 +56,14 @@ This project is built upon the **SECI Model** (Socialization, Externalization, C
     npm run dev
     ```
 
-## 7. Repository Structure
+## 7. Deployment (Vercel)
+1. Fork the GitHub repository.
+2. On your Vercel **Projects** page, click the **Add New** button on the top right.
+3. Click **Project** on the dropdown.
+4. Import the repository.
+5. Under **Environment Variables**, click **Import .env** and import the `.env.local` file with the Supabase URL and anon key.
+
+## 8. Repository Structure
 ```text
 ├── src/
 │   ├── components/      # Reusable UI elements
@@ -67,24 +76,24 @@ This project is built upon the **SECI Model** (Socialization, Externalization, C
 └── public/              # Static assets
 ```
 
-## 8. Branching Strategy
+## 9. Branching Strategy
 We follow a role-based feature branching strategy:
 * **`main`**: Production-ready code only.
 * **`dev`**: Integration branch for features.
 * **`role/feature-name`**: (e.g., `qa/sprint1-tests` or `dev/auth-logic`).
 * *Note: All PRs must target `dev` before being merged into `main`.*
 
-## 9. Contribution Evidence
+## 10. Contribution Evidence
 For a detailed log of all member contributions, linked PRs, and commit history, please visit our **[GitHub Wiki Contribution Log](https://github.com/JLNerecina/PE2-KM-Syllabus-Curriculum-Map/wiki/Contribution-Log)**.
 
 ---
 
-## 10. Screenshots
+## 11. Screenshots
 ![tracker](tracker.png)
 *just a sample*
 ![audit trail](audit.png)
 
-## 11. License & Academic Context
+## 12. License & Academic Context
 This project is licensed under the **MIT License**.
 > This project is developed as a primary requirement for **PROFESSIONAL ELECTIVE 2 (PE2)** under the **Bachelor of Science in Computer Science (BSCS)** program at **NEW ERA UNIVERSITY**. 
 

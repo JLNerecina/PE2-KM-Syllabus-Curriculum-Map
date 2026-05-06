@@ -36,6 +36,7 @@ export default function Map() {
 
   const [attainedCourses, setAttainedCourses] = useState<AttainedCourse[]>([]);
   const [studentName, setStudentName] = useState<string | null>(null);
+  const [programName, setProgramName] = useState<string>('Curriculum Progress');
 
   // Fetch student name when viewing another student
   useEffect(() => {
@@ -44,6 +45,19 @@ export default function Map() {
       if (data) setStudentName(data.name);
     });
   }, [isViewingOther, studentId]);
+
+  // Fetch program name for the target user
+  useEffect(() => {
+    if (!targetUserId) return;
+    const fetchProgramName = async () => {
+      const { data: profileData } = await supabase.from('profiles').select('program_id').eq('id', targetUserId).single();
+      if (profileData?.program_id) {
+        const { data: progData } = await supabase.from('programs').select('name').eq('id', profileData.program_id).single();
+        if (progData) setProgramName(`${progData.name} — Curriculum Progress`);
+      }
+    };
+    fetchProgramName();
+  }, [targetUserId]);
 
   useEffect(() => {
     if (!targetUserId) return;
@@ -142,7 +156,7 @@ export default function Map() {
         {/* The Map Container — dark mode */}
         <div className="bg-[#131b2e] text-slate-200 rounded-xl p-6 border border-slate-800 shadow-xl">
           <div className="text-center mb-6 border-b border-slate-700 pb-5">
-            <h2 className="text-2xl font-black uppercase tracking-widest text-white">CICS Curriculum Progress</h2>
+            <h2 className="text-2xl font-black uppercase tracking-widest text-white">{programName}</h2>
             <p className="text-slate-400 text-sm mt-1">Attained Courses Map</p>
           </div>
 
