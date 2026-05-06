@@ -55,10 +55,11 @@ export default function Tracker() {
 
   // Set program ID from own profile
   useEffect(() => {
-    if (!isViewingOther && profile?.program_id) {
-      setTargetProgramId(profile.program_id);
+    if (!isViewingOther && profile) {
+      // For students, use their program_id. For faculty/admin with no program, set sentinel to unblock fetchData.
+      setTargetProgramId(profile.program_id ?? '__none__');
     }
-  }, [isViewingOther, profile?.program_id]);
+  }, [isViewingOther, profile]);
 
   // Fetch student name and program_id when viewing another student
   useEffect(() => {
@@ -169,13 +170,16 @@ export default function Tracker() {
   const fetchData = useCallback(async () => {
     if (!targetUserId || !targetProgramId) return;
     
-    // Fetch Courses filtered by the student's program
-    const { data: coursesData } = await supabase.from('courses').select('*').eq('program_id', targetProgramId).order('year_level').order('semester');
+    // Fetch Courses — filter by program if the user has one, otherwise fetch all
+    let coursesQuery = supabase.from('courses').select('*').order('year_level').order('semester');
+    if (targetProgramId !== '__none__') {
+      coursesQuery = coursesQuery.eq('program_id', targetProgramId);
+    }
+    const { data: coursesData } = await coursesQuery;
     if (coursesData) setAllCourses(coursesData);
 
-    // Fetch Prerequisites only for courses in this program
+    // Fetch Prerequisites only for relevant courses
     const { data: prereqsData } = await supabase.from('course_prerequisites').select('*');
-    // Filter prerequisites to only include courses from this program
     if (prereqsData && coursesData) {
       const programCourseIds = new Set(coursesData.map(c => c.id));
       setPrerequisites(prereqsData.filter(p => programCourseIds.has(p.course_id)));
